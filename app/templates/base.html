@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            LinguaFlow
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/app.css') }}"
+    >
+
+    {% block head %}{% endblock %}
+
+</head>
+
+<body class="theme-{{ profile_theme if profile_theme is defined else (user.theme if user else 'default') }}">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-mark">
+                L
+            </div>
+
+            <span>
+                LinguaFlow
+            </span>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <a
+                href="/dashboard"
+                class="{% if request.url.path.startswith('/dashboard') %}active{% endif %}"
+            >
+                <span class="nav-icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="/leaderboard{% if active_class %}?class_id={{ active_class.id }}{% endif %}"
+                class="{% if request.url.path.startswith('/leaderboard') %}active{% endif %}"
+            >
+                <span class="nav-icon">🏆</span>
+                <span>Liderlik</span>
+            </a>
+
+
+            <a
+                href="/shop{% if active_class %}?class_id={{ active_class.id }}{% endif %}"
+                class="{% if request.url.path.startswith('/shop') %}active{% endif %}"
+            >
+                <span class="nav-icon">💎</span>
+                <span>Mağaza</span>
+            </a>
+
+            {% if active_class %}<a href="/leaderboard?class_id={{ active_class.id }}"><span class="nav-icon">🏆</span><span>{{ active_class.name }}</span></a>{% endif %}
+
+
+            <a
+                href="/profile"
+                class="{% if request.url.path.startswith('/profile') %}active{% endif %}"
+            >
+                <span class="nav-icon">👤</span>
+                <span>Profil</span>
+            </a>
+
+            <a href="/classes" class="{% if request.url.path.startswith('/classes') %}active{% endif %}">
+                <span class="nav-icon">🏫</span>
+                <span>Sınıflarım</span>
+            </a>
+
+            <a href="/courses" class="{% if request.url.path.startswith('/courses') %}active{% endif %}">
+                <span class="nav-icon">📚</span>
+                <span>Kurslar</span>
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR USER -->
+
+        {% if user %}
+
+<!--        <div class="sidebar-user"> 
+
+            <div class="sidebar-avatar">
+                {{ user.username[0]|upper }}
+            </div>
+
+            <div class="sidebar-user-info">
+
+                <div class="sidebar-user-name">
+                    {{ user.username }}
+                </div>
+
+                <div class="sidebar-user-level">
+                    Seviye {{ user.level }}
+                </div>
+
+            </div>
+
+        </div> -->
+
+        {% endif %}
+
+    </aside> 
+
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             TOPBAR
+             ================================================= -->
+
+        {% if user %}
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             PAGE CONTENT
+             ================================================= -->
+
+        {% block content %}
+
+        {% endblock %}
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    {% block scripts %}{% endblock %}
+
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Kurslar · LinguaFlow{% endblock %}
+{% block content %}
+<div class="class-page content">
+  <div class="class-hero course-hero"><div><span class="eyebrow">ÖĞRENME YOLCULUĞUN</span><h1>Bir kurs seç <span>📚</span></h1><p>İlgini çeken dili seç ve kendi hızında ilerle.</p></div><div class="hero-orb">◎</div></div>
+  <div class="section-title class-section-title">Tüm kurslar <span>{{ courses|length }}</span></div>
+  <div class="course-select-grid">{% for course in courses %}<form method="post" action="/courses/select" class="course-select-card {% if selected_id == course.id %}selected{% endif %}"><input type="hidden" name="course_id" value="{{ course.id }}"><div class="course-select-top"><div class="course-select-icon">{{ course.icon }}</div>{% if selected_id == course.id %}<span class="selected-badge">✓ SEÇİLİ</span>{% else %}<span class="course-language">{{ course.language }}</span>{% endif %}</div><h2>{{ course.name }}</h2><p>{{ course.description }}</p><button class="class-btn {% if selected_id == course.id %}outline{% else %}green{% endif %}" type="submit">{% if selected_id == course.id %}Kursa devam et →{% else %}Bu kursu seç →{% endif %}</button></form>{% else %}<div class="empty-class">Henüz kurs bulunmuyor.</div>{% endfor %}</div>
+</div>
+{% endblock %}

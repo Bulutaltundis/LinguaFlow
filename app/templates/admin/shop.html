@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mağaza Yönetimi · LinguaFlow</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fafc,
+                    #eef2ff
+                );
+
+            color: #111827;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            margin-top: 6px;
+            color: #6b7280;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #4f46e5;
+            font-weight: 800;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 22px;
+            padding: 24px;
+
+            box-shadow:
+                0 10px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 19px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 7px;
+
+            font-size: 13px;
+            font-weight: 800;
+            color: #374151;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+
+            font: inherit;
+            outline: none;
+
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #6366f1;
+
+            box-shadow:
+                0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+
+        .button {
+            width: 100%;
+            border: 0;
+            border-radius: 13px;
+
+            padding: 13px 16px;
+            margin-top: 20px;
+
+            background: #4f46e5;
+            color: white;
+
+            font-weight: 900;
+            cursor: pointer;
+
+            transition:
+                transform .15s,
+                opacity .15s;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            opacity: .92;
+        }
+
+        .products {
+            display: grid;
+            gap: 16px;
+        }
+
+        .product {
+            display: grid;
+            grid-template-columns: 64px 1fr auto;
+            gap: 18px;
+            align-items: center;
+
+            padding: 20px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+
+            background: white;
+
+            transition:
+                transform .15s,
+                box-shadow .15s;
+        }
+
+        .product:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 30px rgba(15, 23, 42, .08);
+        }
+
+        .product.disabled {
+            opacity: .55;
+        }
+
+        .icon {
+            width: 58px;
+            height: 58px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 16px;
+
+            background: #eef2ff;
+
+            font-size: 30px;
+        }
+
+        .product-name {
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .description {
+            margin-top: 5px;
+
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin-top: 10px;
+        }
+
+        .badge {
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            background: #f3f4f6;
+
+            color: #4b5563;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .inactive {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .price {
+            color: #4f46e5;
+            font-weight: 900;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action {
+            border: 0;
+            border-radius: 10px;
+
+            padding: 9px 12px;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .toggle {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .edit {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .delete {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .empty {
+            padding: 60px 30px;
+
+            text-align: center;
+
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 20px;
+
+            border-radius: 12px;
+
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .edit-panel {
+            display: none;
+
+            margin-top: 15px;
+            padding: 20px;
+
+            background: #f8fafc;
+            border-radius: 16px;
+        }
+
+        .edit-panel.open {
+            display: block;
+        }
+
+        .edit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 900px) {
+
+            .container {
+                padding: 20px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .product {
+                grid-template-columns: 52px 1fr;
+            }
+
+            .actions {
+                grid-column: 1 / -1;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topbar">
+
+        <div>
+            <div class="title">
+                🛍️ Mağaza Yönetimi
+            </div>
+
+            <div class="subtitle">
+                LinguaFlow mağazasındaki ürünleri yönet.
+            </div>
+        </div>
+
+        <a
+            class="back"
+            href="/admin"
+        >
+            ← Admin Paneli
+        </a>
+
+    </div>
+
+
+    {% if request.query_params.get("success") %}
+
+        <div class="message success">
+
+            {% if request.query_params.get("success") == "created" %}
+                Ürün başarıyla oluşturuldu. 🎉
+
+            {% elif request.query_params.get("success") == "updated" %}
+                Ürün güncellendi. ✨
+
+            {% elif request.query_params.get("success") == "toggled" %}
+                Ürün durumu değiştirildi.
+
+            {% elif request.query_params.get("success") == "deleted" %}
+                Ürün silindi.
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    {% if request.query_params.get("error") %}
+
+        <div class="message error">
+
+            Bir hata oluştu. Bilgileri kontrol et.
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="layout">
+
+        <!-- CREATE -->
+
+        <div class="card">
+
+            <h2>
+                ➕ Yeni Ürün
+            </h2>
+
+            <form
+                method="post"
+                action="/admin/shop/create"
+            >
+
+                <label>
+                    Ürün adı
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Örneğin: Kalp"
+                    required
+                >
+
+
+                <label>
+                    Açıklama
+                </label>
+
+                <textarea
+                    name="description"
+                    placeholder="Ürünün ne işe yaradığını yaz..."
+                ></textarea>
+
+
+                <label>
+                    İkon
+                </label>
+
+                <input
+                    type="text"
+                    name="icon"
+                    value="🎁"
+                    maxlength="8"
+                >
+
+
+                <label>
+                    Fiyat
+                </label>
+
+                <input
+                    type="number"
+                    name="price"
+                    min="0"
+                    value="100"
+                    required
+                >
+
+
+                <label>
+                    Ürün tipi
+                </label>
+
+                <select
+                    name="type"
+                    required
+                >
+
+                    <option value="heart">
+                        ❤️ Tek Kalp
+                    </option>
+
+                    <option value="heart_pack">
+                        ❤️❤️ 5 Kalp Paketi
+                    </option>
+
+                    <option value="streak_freeze">
+                        🧊 Seri Dondurucu
+                    </option>
+
+                    <option value="xp_boost">
+                        ⚡ XP Boost
+                    </option>
+
+                    <option value="avatar">
+                        🧑 Avatar
+                    </option>
+
+                    <option value="theme">
+                        🎨 Tema
+                    </option>
+
+                    <option value="cosmetic">
+                        ✨ Kozmetik
+                    </option>
+
+                </select>
+
+
+                <button
+                    class="button"
+                    type="submit"
+                >
+                    Ürünü Oluştur
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- PRODUCTS -->
+
+        <div class="products">
+
+            {% if items %}
+
+                {% for item in items %}
+
+                    <div
+                        class="product {% if not item.active %}disabled{% endif %}"
+                    >
+
+                        <div class="icon">
+                            {{ item.icon }}
+                        </div>
+
+
+                        <div>
+
+                            <div class="product-name">
+                                {{ item.name }}
+                            </div>
+
+                            <div class="description">
+                                {{ item.description or "Açıklama yok." }}
+                            </div>
+
+                            <div class="meta">
+
+                                <span class="badge price">
+                                    💎 {{ item.price }}
+                                </span>
+
+                                <span class="badge">
+                                    {{ item.type }}
+                                </span>
+
+                                {% if item.active %}
+
+                                    <span class="badge active">
+                                        Aktif
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge inactive">
+                                        Pasif
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="actions">
+
+                            <form
+                                method="post"
+                                action="/admin/shop/{{ item.id }}/toggle"
+                            >
+
+                                <button
+                                    class="action toggle"
+                                    type="submit"
+                                >
+                                    {% if item.active %}
+                                        Pasifleştir
+                                    {% else %}
+                                        Aktifleştir
+                                    {% endif %}
+                                </button>
+
+                            </form>
+
+
+                            <button
+                                class="action edit"
+                                type="button"
+                                onclick="toggleEdit({{ item.id }})"
+                            >
+                                Düzenle
+                            </button>
+
+
+                            <form
+                                method="post"
+                                action="/admin/shop/{{ item.id }}/delete"
+                                onsubmit="return confirm('Bu ürünü silmek istediğine emin misin?')"
+                            >
+
+                                <button
+                                    class="action delete"
+                                    type="submit"
+                                >
+                                    Sil
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                        <!-- EDIT PANEL -->
+
+                        <div
+                            class="edit-panel"
+                            id="edit-{{ item.id }}"
+                            style="grid-column: 1 / -1;"
+                        >
+
+                            <form
+                                method="post"
+                                action="/admin/shop/{{ item.id }}/edit"
+                            >
+
+                                <div class="edit-grid">
+
+                                    <div>
+
+                                        <label>
+                                            Ürün adı
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value="{{ item.name }}"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <label>
+                                            İkon
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="icon"
+                                            value="{{ item.icon }}"
+                                        >
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <label>
+                                            Fiyat
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            name="price"
+                                            min="0"
+                                            value="{{ item.price }}"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <label>
+                                            Ürün tipi
+                                        </label>
+
+                                        <select name="type">
+
+                                            <option
+                                                value="heart"
+                                                {% if item.type == "heart" %}selected{% endif %}
+                                            >
+                                                ❤️ Tek Kalp
+                                            </option>
+
+                                            <option
+                                                value="heart_pack"
+                                                {% if item.type == "heart_pack" %}selected{% endif %}
+                                            >
+                                                ❤️❤️ 5 Kalp
+                                            </option>
+
+                                            <option
+                                                value="streak_freeze"
+                                                {% if item.type == "streak_freeze" %}selected{% endif %}
+                                            >
+                                                🧊 Seri Dondurucu
+                                            </option>
+
+                                            <option
+                                                value="xp_boost"
+                                                {% if item.type == "xp_boost" %}selected{% endif %}
+                                            >
+                                                ⚡ XP Boost
+                                            </option>
+
+                                            <option
+                                                value="avatar"
+                                                {% if item.type == "avatar" %}selected{% endif %}
+                                            >
+                                                🧑 Avatar
+                                            </option>
+
+                                            <option
+                                                value="theme"
+                                                {% if item.type == "theme" %}selected{% endif %}
+                                            >
+                                                🎨 Tema
+                                            </option>
+
+                                            <option
+                                                value="cosmetic"
+                                                {% if item.type == "cosmetic" %}selected{% endif %}
+                                            >
+                                                ✨ Kozmetik
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+
+                                <label>
+                                    Açıklama
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                >{{ item.description }}</textarea>
+
+
+                                <button
+                                    class="button"
+                                    type="submit"
+                                >
+                                    Değişiklikleri Kaydet
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="card empty">
+
+                    <div class="empty-icon">
+                        🛍️
+                    </div>
+
+                    <strong>
+                        Henüz ürün yok
+                    </strong>
+
+                    <div>
+                        Soldaki formdan ilk mağaza ürününü oluştur.
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function toggleEdit(id) {
+
+    const panel =
+        document.getElementById(
+            "edit-" + id
+        );
+
+    if (!panel) {
+        return;
+    }
+
+    panel.classList.toggle("open");
+}
+
+</script>
+
+</body>
+
+</html>

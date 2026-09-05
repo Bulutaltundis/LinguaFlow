@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Profil · LinguaFlow
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page profile-page">
+
+    <div class="header">
+
+        <div>
+            <h1>Profil</h1>
+
+            <a class="profile-edit-link" href="/profile/settings">⚙️ Profili özelleştir</a>
+            <p>
+                LinguaFlow yolculuğuna göz at.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- PROFILE -->
+
+    <section class="profile-card">
+
+        <div class="profile-content">
+
+            <div class="avatar">
+                {{ user.avatar }}
+            </div>
+
+            <div>
+
+                <div class="profile-name">
+                    {{ user.username }}
+                </div>
+
+                <div class="username">
+                    {{ user.email }}
+                </div>
+
+                <div class="level">
+                    ⭐ Seviye {{ user.level }}
+                </div>
+                {% if user.cosmetic %}<div class="profile-cosmetic">✨ {{ user.cosmetic }}</div>{% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                ⚡
+            </div>
+
+            <div class="stat-value">
+                {{ user.xp }}
+            </div>
+
+            <div class="stat-label">
+                Toplam XP
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🔥
+            </div>
+
+            <div class="stat-value">
+                {{ user.streak }}
+            </div>
+
+            <div class="stat-label">
+                Günlük Seri
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                💎
+            </div>
+
+            <div class="stat-value">
+                {{ user.gems }}
+            </div>
+
+            <div class="stat-label">
+                Gems
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                📚
+            </div>
+
+            <div class="stat-value">
+                {{ completed_count }}
+            </div>
+
+            <div class="stat-label">
+                Tamamlanan Ders
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- XP -->
+
+    <section class="section">
+
+        <div class="section-title">
+            ⚡ Seviye İlerlemesi
+        </div>
+
+        <div class="xp-top">
+
+            <span>
+                Seviye {{ user.level }}
+            </span>
+
+            <span>
+                {{ xp_progress }} / 100 XP
+            </span>
+
+        </div>
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                style="width: {{ xp_progress }}%;"
+            ></div>
+
+        </div>
+
+        <div class="xp-next">
+
+            Bir sonraki seviyeye
+
+            <strong>
+                {{ xp_to_next }} XP
+            </strong>
+
+            kaldı.
+
+        </div>
+
+    </section>
+
+
+    <!-- ACHIEVEMENTS -->
+
+    <section class="section">
+
+        <div class="section-title">
+            🏆 Başarılar
+        </div>
+
+
+        <div class="achievements">
+
+            {% for achievement in achievements %}
+
+            <div
+                class="
+                    achievement
+                    {% if not achievement.unlocked %}
+                        locked
+                    {% endif %}
+                "
+            >
+
+                <div class="achievement-icon">
+                    {{ achievement.icon }}
+                </div>
+
+                <div class="achievement-name">
+                    {{ achievement.name }}
+                </div>
+
+                <div class="achievement-description">
+                    {{ achievement.description }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

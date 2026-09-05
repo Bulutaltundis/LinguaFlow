@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{{ unit.title }} · LinguaFlow</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f6f8fc;
+    color: #172033;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        Inter,
+        sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.main {
+    max-width: 1100px;
+    margin: auto;
+    padding: 45px 25px;
+}
+
+.back {
+    color: #7d8597;
+    font-weight: 700;
+}
+
+.header {
+    margin-top: 25px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 34px;
+}
+
+.header p {
+    color: #8991a4;
+}
+
+.primary {
+    border: 0;
+    background: #58cc02;
+    color: white;
+    padding: 14px 19px;
+    border-radius: 13px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.lessons {
+    margin-top: 35px;
+
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(280px, 1fr));
+
+    gap: 18px;
+}
+
+.lesson {
+    background: white;
+    border: 1px solid #e8ecf2;
+    border-radius: 22px;
+    padding: 22px;
+
+    box-shadow:
+        0 8px 30px rgba(31,45,61,.04);
+
+    transition: .2s;
+}
+
+.lesson:hover {
+    transform: translateY(-4px);
+}
+
+.lesson-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 17px;
+
+    display: grid;
+    place-items: center;
+
+    background: #eef8e8;
+
+    font-size: 28px;
+}
+
+.lesson h2 {
+    margin: 18px 0 5px;
+    font-size: 19px;
+}
+
+.lesson-meta {
+    color: #8c94a6;
+    font-size: 13px;
+}
+
+.lesson-arrow {
+    margin-top: 18px;
+    color: #58a600;
+    font-weight: 900;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(17,24,39,.3);
+    backdrop-filter: blur(5px);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 480px;
+
+    background: white;
+    border-radius: 25px;
+    padding: 28px;
+}
+
+.modal-head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.close {
+    border: 0;
+    background: #f1f3f6;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    cursor: pointer;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+
+    border: 1px solid #dfe4ec;
+    border-radius: 13px;
+
+    font: inherit;
+    outline: none;
+}
+
+input:focus {
+    border-color: #58cc02;
+}
+
+.submit {
+    width: 100%;
+    margin-top: 22px;
+
+    padding: 14px;
+
+    border: 0;
+    border-radius: 14px;
+
+    background: #58cc02;
+    color: white;
+
+    font-weight: 900;
+}
+
+@media(max-width:700px) {
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .primary {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<main class="main">
+
+<a class="back" href="/admin/courses">
+← Kurslar
+</a>
+
+<div class="header">
+
+<div>
+
+<h1>{{ unit.title }}</h1>
+
+<p>
+{{ unit.description }}
+</p>
+
+</div>
+
+<button class="primary" onclick="openModal()">
++ Ders Ekle
+</button>
+
+</div>
+
+<div class="lessons">
+
+{% for lesson in lessons %}
+
+<a
+    class="lesson"
+    href="/admin/lessons/{{ lesson.id }}"
+>
+
+<div class="lesson-icon">
+{{ lesson.icon }}
+</div>
+
+<h2>
+{{ lesson.title }}
+</h2>
+
+<div class="lesson-meta">
+{{ lesson.xp_reward }} XP · Sıra {{ lesson.order }}
+</div>
+
+<div class="lesson-arrow">
+Soruları yönet →
+</div>
+
+</a>
+
+{% else %}
+
+<div class="lesson">
+Henüz ders oluşturulmamış.
+</div>
+
+{% endfor %}
+
+</div>
+
+</main>
+
+
+<div class="modal" id="modal">
+
+<div class="modal-card">
+
+<div class="modal-head">
+
+<h2>Yeni Ders</h2>
+
+<button
+    class="close"
+    onclick="closeModal()"
+>
+×
+</button>
+
+</div>
+
+<form
+    method="post"
+    action="/admin/units/{{ unit.id }}/lessons/create"
+>
+
+<label>Ders adı</label>
+
+<input
+    name="title"
+    placeholder="Örn. Temel Kelimeler"
+    required
+>
+
+<label>İkon</label>
+
+<input
+    name="icon"
+    value="📖"
+>
+
+<label>XP ödülü</label>
+
+<input
+    name="xp_reward"
+    type="number"
+    value="10"
+>
+
+<label>Sıra</label>
+
+<input
+    name="order"
+    type="number"
+    value="{{ (lessons|length) + 1 }}"
+>
+
+<button class="submit">
+Ders Oluştur
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+function openModal() {
+    document
+        .getElementById("modal")
+        .classList.add("open");
+}
+
+function closeModal() {
+    document
+        .getElementById("modal")
+        .classList.remove("open");
+}
+
+</script>
+
+</body>
+</html>

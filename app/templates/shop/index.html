@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard · LinguaFlow
+{% endblock %}
+
+{% block content %}
+
+<head> 
+    <style>
+        .main {
+            margin-left: 0px;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="content">
+
+            <div class="header">
+
+                <div>
+
+                    <h1>
+                        💎 Mağaza
+                    </h1>
+
+                    <p>
+                        Gemlerini kullan ve öğrenme deneyimini güçlendir.
+                    </p>
+
+                </div>
+
+
+                <div class="gems">
+
+                    <span class="gem-icon">
+                        💎
+                    </span>
+
+                    <span>
+                        {{ user.gems }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            {% if request.query_params.get("error") == "not_enough_gems" %}
+
+                <div class="alert error">
+                    💎 Bu ürünü almak için yeterli gemin yok.
+                </div>
+
+            {% elif request.query_params.get("error") == "no_hearts" %}
+
+                <div class="alert error">
+                    ❤️ Canın kalmadı. Derse devam etmek için Kalp Paketi al.
+                </div>
+
+            {% elif request.query_params.get("error") == "invalid_item" %}
+
+                <div class="alert error">
+                    Bu ürün şu anda satın alınamıyor.
+                </div>
+
+            {% elif request.query_params.get("success") == "purchased" %}
+
+                <div class="alert success">
+                    ✓ Satın alma başarılı!
+                </div>
+
+            {% endif %}
+
+
+            <section class="hero">
+
+                <h2>
+                    Öğrenirken kazandın. Şimdi harca. 💎
+                </h2>
+
+                <p>
+                    Derslerden kazandığın gemileri ekstra kalpler,
+                    seri koruması ve gelecekteki güçlendirmeler için kullan.
+                </p>
+
+            </section>
+
+
+            <div class="section-title">
+                Öne çıkanlar
+            </div>
+
+
+            <div class="products">
+
+                {% for item in items %}
+
+                <article class="product">
+
+                    <div class="product-icon">
+                        {{ item.icon }}
+                    </div>
+
+
+                    <h3>
+                        {{ item.name }}
+                    </h3>
+
+
+                    <div class="product-description">
+                        {{ item.description }}
+                    </div>
+
+
+                    <div class="product-bottom">
+
+                        <div class="price">
+
+                            💎 {{ item.price }}
+
+                        </div>
+
+
+                        {% if user.gems >= item.price %}
+
+                        <form
+                            method="post"
+                            action="/shop/buy/{{ item.id }}"
+                        >
+
+                            <button
+                                class="buy-button"
+                                type="submit"
+                            >
+                                Satın al
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        <button
+                            class="buy-button disabled"
+                            disabled
+                        >
+                            Yetersiz
+                        </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </article>
+
+                {% else %}
+
+                <div class="alert">
+                    Mağazada şu anda ürün bulunmuyor.
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+
+{% endblock %}

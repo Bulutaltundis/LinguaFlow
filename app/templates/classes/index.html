@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sınıflarım · LinguaFlow{% endblock %}
+{% block content %}
+<div class="class-page content">
+  <div class="class-hero"><div><span class="eyebrow">ÖĞRENME TOPLULUĞUN</span><h1>Sınıflarım <span>🏫</span></h1><p>Birlikte öğren, ilerlemeni paylaş ve sınıfında zirveye çık.</p></div><div class="hero-orb">✦</div></div>
+  {% if request.query_params.get('error') %}<div class="class-alert">⚠️ Kod hatalı veya bu işlem için yetkin yok.</div>{% endif %}
+  <div class="class-action-grid">
+    <section class="class-panel join-panel"><div class="panel-icon">🔑</div><div><h2>Sınıfa katıl</h2><p>Öğretmeninden aldığın kodu gir.</p></div><form method="post" action="/classes/join" class="inline-form"><input name="code" placeholder="123-ABC" maxlength="7" required><button class="class-btn blue" type="submit">Katıl →</button></form></section>
+    {% if user.role == 'teacher' %}<section class="class-panel create-panel"><div class="panel-icon">✨</div><div><h2>Yeni sınıf oluştur</h2><p>Ücretsiz sınıfını hemen başlat.</p></div><form method="post" action="/classes/create" class="stack-form"><input name="name" placeholder="Sınıf adı" required><select name="course_id" required>{% for course in courses %}<option value="{{ course.id }}">{{ course.icon }} {{ course.name }}</option>{% endfor %}</select><button class="class-btn green" type="submit">Sınıfı oluştur</button></form></section>{% endif %}
+  </div>
+  <div class="section-title class-section-title">Sınıfların <span>{{ rooms|length }}</span></div>
+  <div class="class-grid">{% for data in rooms %}<a class="class-card" href="/classes/{{ data.room.id }}"><div class="class-card-top"><div class="class-avatar">{{ data.course.icon if data.course else '🌍' }}</div><span class="class-arrow">↗</span></div><h2>{{ data.room.name }}</h2><p>{{ data.course.name if data.course else 'İçerik seçilmemiş' }}</p><div class="class-card-meta"><span>👥 {{ data.student_count }} öğrenci</span><span class="code-mini">{{ data.room.code }}</span></div><div class="class-card-footer">{% if data.room.teacher_id == user.id %}<span class="role-pill teacher-pill">ÖĞRETMEN</span>{% else %}<span class="role-pill">ÖĞRENCİ</span>{% endif %}<span>Detayları gör →</span></div></a>{% else %}<div class="empty-class"><div>🎒</div><h3>Henüz bir sınıfın yok</h3><p>Yukarıdaki kod alanından sınıfına katılabilirsin.</p></div>{% endfor %}</div>
+</div>
+{% endblock %}

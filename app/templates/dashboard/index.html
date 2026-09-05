@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard · LinguaFlow
+{% endblock %}
+
+{% block content %}
+
+<head> 
+    <style>
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+<main class="DashboardMain">
+
+    <!-- TOP STATS -->
+
+    <header class="topbar">
+
+        <div class="stat-pill">
+            🔥 {{ user.streak }}
+        </div>
+
+        <div class="stat-pill">
+            ⚡ {{ user.xp }} XP
+        </div>
+
+        <div class="stat-pill">
+            ❤️ {{ user.hearts }}
+        </div>
+
+        <div class="stat-pill">
+            💎 {{ user.gems }}
+        </div>
+
+    </header>
+
+
+    <div class="content">
+
+        <!-- COURSE HEADER -->
+
+        <section class="course-header">
+
+            {% if active_class %}
+            <div style="display:inline-flex;align-items:center;gap:7px;padding:7px 11px;margin-bottom:12px;border-radius:999px;background:#eef3ff;color:#466ac5;font-size:11px;font-weight:900;letter-spacing:.5px;">
+                🏫 {{ active_class.name }} sınıfı
+            </div>
+            {% endif %}
+
+            <div class="course-icon">
+                {{ course.icon if course else "🌍" }}
+            </div>
+
+            <h1>
+                {{ course.name if course else "İngilizce" }}
+            </h1>
+
+            <p>
+                {{ course.description if course else "Dil öğrenmeye başla." }}
+            </p>
+
+        </section>
+
+
+        <!-- DAILY GOAL -->
+
+        <section class="daily">
+
+            <div class="daily-icon">
+                🎯
+            </div>
+
+            <div>
+                <div class="daily-title">
+                    Günlük hedef
+                </div>
+
+                <div class="daily-subtitle">
+                    Her gün biraz daha ileri git.
+                </div>
+            </div>
+
+            <div class="daily-value">
+                {{ daily_goal }} / 50 XP
+            </div>
+
+            <div class="daily-progress">
+                <div></div>
+            </div>
+
+        </section>
+
+
+        <!-- COURSE TREE -->
+
+        {% for unit_data in units %}
+
+        <section class="unit">
+
+            <div class="unit-header">
+
+                <div>
+
+                    <div class="unit-number">
+                        Ünite {{ loop.index }}
+                    </div>
+
+                    <div class="unit-title">
+                        {{ unit_data.unit.title }}
+                    </div>
+
+                    <div class="unit-description">
+                        {{ unit_data.unit.description }}
+                    </div>
+
+                </div>
+
+                <div class="unit-progress">
+
+                    {% set completed =
+                        unit_data.lessons
+                        | selectattr("completed")
+                        | list
+                        | length
+                    %}
+
+                    {{ completed }}/{{ unit_data.lessons|length }}
+
+                </div>
+
+            </div>
+
+
+            <div class="tree">
+
+                {% for item in unit_data.lessons %}
+
+                <div class="lesson-wrap">
+
+                    {% if not item.locked %}
+
+                        <a
+                            href="/lesson/{{ item.lesson.id }}"
+                            class="
+                                lesson
+                                {% if item.completed %}completed{% endif %}
+                                {% if item.lesson.id == current_lesson_id %}current{% endif %}
+                            "
+                        >
+
+                            {% if item.completed %}
+                                ✓
+                            {% else %}
+                                {{ item.lesson.icon }}
+                            {% endif %}
+
+                            {% if item.completed %}
+                                <span class="check">✓</span>
+                            {% endif %}
+
+                        </a>
+
+                    {% else %}
+
+                        <div class="lesson locked">
+                            🔒
+                        </div>
+
+                    {% endif %}
+
+
+                    <div
+                        class="
+                            lesson-label
+                            {% if item.lesson.id == current_lesson_id %}
+                                current-label
+                            {% endif %}
+                        "
+                    >
+
+                        {{ item.lesson.title }}
+
+                        {% if item.lesson.id == current_lesson_id %}
+                            <div style="
+                                font-size:10px;
+                                margin-top:3px;
+                                color:rgba(255,255,255,.45);
+                            ">
+                                ŞİMDİ BURADASIN
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% endfor %}
+
+
+        <!-- LEVEL -->
+
+        <section class="level-card">
+
+            <div class="level-top">
+
+                <span>
+                    LEVEL {{ level.level }}
+                </span>
+
+                <span class="level-xp">
+                    {{ level.current_xp }} / {{ level.required_xp }} XP
+                </span>
+
+            </div>
+
+            <div class="xp-bar">
+                <div></div>
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+{% endblock %}

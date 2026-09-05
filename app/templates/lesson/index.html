@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ lesson.title }} — LinguaFlow</title>
+
+    <style>
+        :root {
+            --green: #58cc02;
+            --green-dark: #46a302;
+            --green-soft: #efffe7;
+            --bg: #f7f9fc;
+            --white: #ffffff;
+            --text: #172033;
+            --muted: #7c8799;
+            --border: #e5eaf0;
+            --red: #ff4b4b;
+            --red-soft: #fff0f0;
+            --shadow: 0 8px 28px rgba(23,32,51,.07);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "Inter",
+                sans-serif;
+
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page {
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+
+            background: rgba(255,255,255,.94);
+            border-bottom: 1px solid var(--border);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .header-inner {
+            width: min(900px, calc(100% - 40px));
+            height: 72px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 48px 1fr 100px;
+            align-items: center;
+        }
+
+        .back {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            background: #f5f7fa;
+            border: 1px solid var(--border);
+
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 800;
+
+            transition:
+                background .15s ease,
+                color .15s ease,
+                transform .15s ease;
+        }
+
+        .back:hover {
+            background: var(--green-soft);
+            color: var(--green-dark);
+            transform: translateX(-2px);
+        }
+
+        .title {
+            text-align: center;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .hearts {
+            justify-self: end;
+
+            padding: 9px 12px;
+
+            background: #fff1f1;
+            border: 1px solid #ffd7d7;
+            border-radius: 12px;
+
+            color: #e43d3d;
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        /* =========================
+           PROGRESS
+        ========================= */
+
+        .progress-wrapper {
+            width: min(900px, calc(100% - 40px));
+            margin: 24px auto 0;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 9px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .progress-info span:last-child {
+            color: var(--green-dark);
+        }
+
+        .progress {
+            width: 100%;
+            height: 10px;
+
+            overflow: hidden;
+
+            background: #e7ebef;
+            border-radius: 999px;
+        }
+
+        .progress-bar {
+            width: {{ ((question_index + 1) / total * 100)|round }}%;
+            height: 100%;
+
+            background: var(--green);
+            border-radius: inherit;
+
+            transition: width .4s ease;
+
+            box-shadow:
+                inset 0 -1px 0 rgba(0,0,0,.08);
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            width: min(700px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 42px 0 80px;
+        }
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result {
+            margin-bottom: 28px;
+
+            padding: 16px 18px;
+
+            border-radius: 16px;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            animation: slideDown .25s ease;
+        }
+
+        .result.correct {
+            background: var(--green-soft);
+            border: 1px solid #ccefb5;
+            color: var(--green-dark);
+        }
+
+        .result.wrong {
+            background: var(--red-soft);
+            border: 1px solid #ffd0d0;
+            color: #d83d3d;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================
+           QUESTION TYPE
+        ========================= */
+
+        .question-type {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 7px 11px;
+
+            background: var(--green-soft);
+
+            border: 1px solid #d7f3c4;
+            border-radius: 9px;
+
+            color: var(--green-dark);
+
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: .7px;
+        }
+
+        /* =========================
+           QUESTION
+        ========================= */
+
+        .content h1 {
+            margin: 16px 0 30px;
+
+            color: var(--text);
+
+            font-size: 32px;
+            line-height: 1.25;
+            font-weight: 900;
+            letter-spacing: -.8px;
+        }
+
+        /* =========================
+           OPTIONS
+        ========================= */
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            width: 100%;
+
+            padding: 18px 20px;
+
+            text-align: left;
+
+            background: var(--white);
+
+            border: 2px solid var(--border);
+            border-radius: 16px;
+
+            color: var(--text);
+
+            font-size: 16px;
+            font-weight: 800;
+
+            box-shadow: 0 3px 0 #dce1e6;
+
+            transition:
+                border-color .15s ease,
+                background .15s ease,
+                transform .12s ease,
+                box-shadow .12s ease;
+        }
+
+        .option:hover {
+            border-color: #a9e989;
+            background: var(--green-soft);
+        }
+
+        .option:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .option.selected {
+            background: var(--green-soft);
+            border-color: var(--green);
+
+            color: var(--green-dark);
+
+            box-shadow:
+                0 3px 0 var(--green-dark);
+        }
+
+        /* =========================
+           TEXT INPUT
+        ========================= */
+
+        .answer-input {
+            width: 100%;
+            height: 58px;
+
+            padding: 0 18px;
+
+            background: var(--white);
+
+            border: 2px solid var(--border);
+            border-radius: 16px;
+
+            outline: none;
+
+            color: var(--text);
+
+            font-size: 17px;
+            font-weight: 700;
+
+            transition:
+                border-color .15s ease,
+                box-shadow .15s ease;
+        }
+
+        .answer-input::placeholder {
+            color: #a5adba;
+        }
+
+        .answer-input:focus {
+            border-color: var(--green);
+
+            box-shadow:
+                0 0 0 4px var(--green-soft);
+        }
+
+        /* =========================
+           WORD ORDER
+        ========================= */
+
+        .word-order {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .word-answer {
+            min-height: 66px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+
+            padding: 12px;
+
+            background: #f1f4f7;
+
+            border: 2px dashed #d8dee5;
+            border-radius: 16px;
+        }
+
+        .word-answer.empty::before {
+            content: "Kelimelere dokunarak cümleyi oluştur...";
+            align-self: center;
+
+            color: #9aa4b2;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .word {
+            padding: 13px 16px;
+
+            background: var(--white);
+
+            border: 2px solid var(--border);
+            border-radius: 13px;
+
+            color: var(--text);
+
+            font-size: 15px;
+            font-weight: 800;
+
+            box-shadow: 0 3px 0 #dce1e6;
+
+            transition:
+                transform .12s ease,
+                border-color .15s ease,
+                background .15s ease;
+        }
+
+        .word:hover {
+            background: var(--green-soft);
+            border-color: #a9e989;
+        }
+
+        .word:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .word.used {
+            opacity: .35;
+            pointer-events: none;
+        }
+
+        .selected-word {
+            padding: 10px 13px;
+
+            background: var(--green-soft);
+
+            border: 1px solid #bdeaa2;
+            border-radius: 11px;
+
+            color: var(--green-dark);
+
+            font-size: 14px;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           LISTENING
+        ========================= */
+
+        .listening-box {
+            padding: 22px;
+
+            background: var(--white);
+
+            border: 2px solid var(--border);
+            border-radius: 18px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .audio-label {
+            margin-bottom: 12px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        audio {
+            width: 100%;
+            height: 48px;
+        }
+
+        .listening-input {
+            margin-top: 18px;
+        }
+
+        /* =========================
+           SUBMIT
+        ========================= */
+
+        .submit {
+            width: 100%;
+            height: 56px;
+
+            margin-top: 24px;
+
+            border: 0;
+            border-radius: 15px;
+
+            background: var(--green);
+
+            color: white;
+
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: .2px;
+
+            box-shadow:
+                0 4px 0 var(--green-dark);
+
+            transition:
+                transform .12s ease,
+                background .12s ease;
+        }
+
+        .submit:hover {
+            background: #61d609;
+        }
+
+        .submit:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .submit:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 0 #aeb7c0;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 650px) {
+
+            .header-inner {
+                width: calc(100% - 24px);
+                height: 64px;
+
+                grid-template-columns: 42px 1fr 82px;
+            }
+
+            .back {
+                width: 38px;
+                height: 38px;
+            }
+
+            .title {
+                font-size: 15px;
+            }
+
+            .hearts {
+                padding: 8px 9px;
+                font-size: 12px;
+            }
+
+            .progress-wrapper {
+                width: calc(100% - 28px);
+                margin-top: 18px;
+            }
+
+            .content {
+                width: calc(100% - 28px);
+                padding-top: 30px;
+            }
+
+            .content h1 {
+                font-size: 27px;
+            }
+
+            .option {
+                padding: 16px;
+            }
+
+            .word {
+                padding: 11px 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <header>
+        <div class="header-inner">
+
+            <a class="back" href="/dashboard">
+                ←
+            </a>
+
+            <div class="title">
+                {{ lesson.title }}
+            </div>
+
+            <div class="hearts">
+                ❤️ {{ user.hearts }}
+            </div>
+
+        </div>
+    </header>
+
+
+    <div class="progress-wrapper">
+
+        <div class="progress-info">
+            <span>{{ question_index + 1 }} / {{ total }}</span>
+            <span>{{ lesson.xp_reward }} XP</span>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+
+    </div>
+
+
+    <main class="content">
+
+        {% if result %}
+
+            <div class="
+                result
+                {% if result.correct %}
+                    correct
+                {% else %}
+                    wrong
+                {% endif %}
+            ">
+
+                <strong>
+                    {{ result.message }}
+                </strong>
+
+                {% if result.xp %}
+                    <div style="margin-top:5px;">
+                        ⚡ +{{ result.xp }} XP
+                    </div>
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="question-type">
+
+            {% if question.type == "multiple_choice" %}
+                ÇOKTAN SEÇMELİ
+
+            {% elif question.type == "translation" %}
+                ÇEVİRİ
+
+            {% elif question.type == "fill_blank" %}
+                BOŞLUK DOLDUR
+
+            {% elif question.type == "word_order" %}
+                KELİME SIRALAMA
+
+            {% elif question.type == "listening" %}
+                DİNLEME
+
+            {% else %}
+                DERS
+            {% endif %}
+
+        </div>
+
+
+        <h1>
+            {{ question.prompt }}
+        </h1>
+
+
+        <form
+            method="post"
+            action="/lesson/{{ lesson.id }}/answer"
+            id="answer-form"
+        >
+
+            <input
+                type="hidden"
+                name="question_id"
+                value="{{ question.id }}"
+            >
+
+            <input
+                type="hidden"
+                name="question_index"
+                value="{{ question_index }}"
+            >
+
+
+            <!-- =========================
+                 MULTIPLE CHOICE
+            ========================== -->
+
+            {% if question.type == "multiple_choice" %}
+
+                <div class="options">
+
+                    {% for option in options %}
+
+                        <button
+                            type="button"
+                            class="option"
+                            data-value="{{ option }}"
+                            onclick="selectOption(this)"
+                        >
+                            {{ option }}
+                        </button>
+
+                    {% endfor %}
+
+                </div>
+
+                <input
+                    type="hidden"
+                    name="answer"
+                    id="answer"
+                    value=""
+                >
+
+
+            <!-- =========================
+                 TRANSLATION
+            ========================== -->
+
+            {% elif question.type == "translation" %}
+
+                <input
+                    class="answer-input"
+                    type="text"
+                    name="answer"
+                    placeholder="Çevirini yaz..."
+                    autocomplete="off"
+                    required
+                    autofocus
+                >
+
+
+            <!-- =========================
+                 FILL BLANK
+            ========================== -->
+
+            {% elif question.type == "fill_blank" %}
+
+                <input
+                    class="answer-input"
+                    type="text"
+                    name="answer"
+                    placeholder="Boşluğu doldur..."
+                    autocomplete="off"
+                    required
+                    autofocus
+                >
+
+
+            <!-- =========================
+                 WORD ORDER
+            ========================== -->
+
+            {% elif question.type == "word_order" %}
+
+                <div class="word-order">
+
+                    <div
+                        class="word-answer empty"
+                        id="word-answer"
+                    ></div>
+
+                    <div class="word-bank">
+
+                        {% for word in words %}
+
+                            <button
+                                type="button"
+                                class="word"
+                                data-word="{{ word }}"
+                                onclick="selectWord(this)"
+                            >
+                                {{ word }}
+                            </button>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <input
+                    type="hidden"
+                    name="answer"
+                    id="word-answer-input"
+                    value=""
+                >
+
+
+            <!-- =========================
+                 LISTENING
+            ========================== -->
+
+            {% elif question.type == "listening" %}
+
+                <div class="listening-box">
+
+                    <div class="audio-label">
+                        🔊 Dinle ve cevapla
+                    </div>
+
+                    {% if question.audio_url %}
+
+                        <audio
+                            controls
+                            preload="metadata"
+                        >
+                            <source
+                                src="{{ question.audio_url }}"
+                                type="audio/mpeg"
+                            >
+
+                            Tarayıcın ses oynatmayı desteklemiyor.
+                        </audio>
+
+                    {% else %}
+
+                        <div style="
+                            color:#d83d3d;
+                            font-size:14px;
+                            font-weight:800;
+                        ">
+                            Bu soru için ses dosyası bulunamadı.
+                        </div>
+
+                    {% endif %}
+
+                    <input
+                        class="answer-input listening-input"
+                        type="text"
+                        name="answer"
+                        placeholder="Duyduğunu yaz..."
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+            <!-- =========================
+                 FALLBACK
+            ========================== -->
+
+            {% else %}
+
+                <input
+                    class="answer-input"
+                    type="text"
+                    name="answer"
+                    placeholder="Cevabını yaz..."
+                    autocomplete="off"
+                    required
+                    autofocus
+                >
+
+            {% endif %}
+
+
+            <button
+                class="submit"
+                type="submit"
+                id="submit-button"
+            >
+                CEVABI KONTROL ET →
+            </button>
+
+        </form>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /*
+     * =========================
+     * MULTIPLE CHOICE
+     * =========================
+     */
+
+    function selectOption(button) {
+
+        document
+            .querySelectorAll(".option")
+            .forEach(option => {
+                option.classList.remove("selected");
+            });
+
+        button.classList.add("selected");
+
+        const answer = document.getElementById("answer");
+
+        if (answer) {
+            answer.value = button.dataset.value;
+        }
+    }
+
+
+    /*
+     * =========================
+     * WORD ORDER
+     * =========================
+     */
+
+    let selectedWords = [];
+
+
+    function selectWord(button) {
+
+        if (button.classList.contains("used")) {
+            return;
+        }
+
+        const word = button.dataset.word;
+
+        selectedWords.push(word);
+
+        button.classList.add("used");
+
+        renderSelectedWords();
+
+        updateWordOrderAnswer();
+    }
+
+
+    function removeWord(index) {
+
+        selectedWords.splice(index, 1);
+
+        const buttons = document.querySelectorAll(".word");
+
+        let occurrences = {};
+
+        selectedWords.forEach(word => {
+            occurrences[word] = (occurrences[word] || 0) + 1;
+        });
+
+        buttons.forEach(button => {
+
+            const word = button.dataset.word;
+
+            if (occurrences[word] > 0) {
+                occurrences[word]--;
+                button.classList.add("used");
+            } else {
+                button.classList.remove("used");
+            }
+
+        });
+
+        renderSelectedWords();
+
+        updateWordOrderAnswer();
+    }
+
+
+    function renderSelectedWords() {
+
+        const container = document.getElementById("word-answer");
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = "";
+
+        if (selectedWords.length === 0) {
+            container.classList.add("empty");
+            return;
+        }
+
+        container.classList.remove("empty");
+
+        selectedWords.forEach((word, index) => {
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "selected-word";
+            button.textContent = word;
+
+            button.onclick = function() {
+                removeWord(index);
+            };
+
+            container.appendChild(button);
+        });
+    }
+
+
+    function updateWordOrderAnswer() {
+
+        const input = document.getElementById("word-answer-input");
+
+        if (!input) {
+            return;
+        }
+
+        input.value = selectedWords.join(" ");
+    }
+
+
+    /*
+     * =========================
+     * FORM VALIDATION
+     * =========================
+     */
+
+    document
+        .getElementById("answer-form")
+        .addEventListener("submit", function(event) {
+
+            const questionType = "{{ question.type }}";
+
+            let answer = "";
+
+
+            if (questionType === "multiple_choice") {
+
+                const input = document.getElementById("answer");
+
+                if (input) {
+                    answer = input.value.trim();
+                }
+
+            } else if (questionType === "word_order") {
+
+                const input = document.getElementById("word-answer-input");
+
+                if (input) {
+                    answer = input.value.trim();
+                }
+
+            } else {
+
+                const input = this.querySelector(
+                    'input[name="answer"]:not([type="hidden"])'
+                );
+
+                if (input) {
+                    answer = input.value.trim();
+                }
+            }
+
+
+            if (!answer) {
+
+                event.preventDefault();
+
+                if (questionType === "multiple_choice") {
+                    alert("Önce bir cevap seç!");
+                } else if (questionType === "word_order") {
+                    alert("Önce kelimeleri sıralamalısın!");
+                } else {
+                    alert("Önce bir cevap yaz!");
+                }
+
+                return;
+            }
+
+        });
+
+</script>
+
+</body>
+</html>
+```

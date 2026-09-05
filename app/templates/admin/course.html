@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{{ course.name }} · LinguaFlow Admin</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f6f8fc;
+    color: #172033;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        Inter,
+        sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.layout {
+    min-height: 100vh;
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    background: white;
+    border-right: 1px solid #e8ebf2;
+    padding: 24px 16px;
+    position: fixed;
+    inset: 0 auto 0 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px 12px 28px;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: #58cc02;
+    font-size: 22px;
+    box-shadow: 0 7px 18px rgba(88,204,2,.2);
+}
+
+.brand strong {
+    font-size: 20px;
+}
+
+.brand span {
+    display: block;
+    font-size: 11px;
+    color: #9299aa;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.nav a {
+    padding: 13px;
+    border-radius: 13px;
+    color: #687086;
+    font-weight: 700;
+}
+
+.nav a.active {
+    background: #eaf8df;
+    color: #3f9700;
+}
+
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 38px;
+}
+
+.back {
+    color: #7c8497;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.header {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.title {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+
+.icon {
+    width: 74px;
+    height: 74px;
+    background: white;
+    border: 1px solid #e7ebf2;
+    border-radius: 22px;
+    display: grid;
+    place-items: center;
+    font-size: 38px;
+    box-shadow: 0 10px 30px rgba(31,45,61,.05);
+}
+
+h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.subtitle {
+    margin-top: 6px;
+    color: #8a92a5;
+}
+
+.primary {
+    border: 0;
+    background: #58cc02;
+    color: white;
+    padding: 13px 18px;
+    border-radius: 13px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.units {
+    margin-top: 35px;
+    display: grid;
+    gap: 18px;
+}
+
+.unit {
+    background: white;
+    border: 1px solid #e8ecf2;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 8px 30px rgba(31,45,61,.04);
+    transition: .2s;
+}
+
+.unit:hover {
+    transform: translateY(-2px);
+}
+
+.unit-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.unit-number {
+    font-size: 12px;
+    color: #58a600;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.unit h2 {
+    margin: 6px 0;
+}
+
+.unit p {
+    margin: 0;
+    color: #8b93a7;
+}
+
+.lessons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.lesson {
+    padding: 10px 13px;
+    border-radius: 12px;
+    background: #f5f7fa;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.lesson:hover {
+    background: #eaf8df;
+    color: #3f9700;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(17,24,39,.3);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 480px;
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+}
+
+.modal-head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.close {
+    border: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    cursor: pointer;
+}
+
+label {
+    display: block;
+    margin: 16px 0 7px;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+input,
+textarea {
+    width: 100%;
+    border: 1px solid #dfe4ec;
+    border-radius: 13px;
+    padding: 13px;
+    font: inherit;
+    outline: none;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #58cc02;
+}
+
+.submit {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border: 0;
+    border-radius: 13px;
+    background: #58cc02;
+    color: white;
+    font-weight: 900;
+}
+
+@media(max-width:800px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        margin: 0;
+        width: 100%;
+        padding: 24px 16px;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+    <div class="brand">
+        <div class="brand-icon">🦉</div>
+
+        <div>
+            <strong>LinguaFlow</strong>
+            <span>ADMIN PANEL</span>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <a href="/admin">📊 Genel Bakış</a>
+        <a href="/admin/courses" class="active">📚 Kurslar</a>
+        <a href="/dashboard">🎓 Öğrenci Paneli</a>
+    </nav>
+
+</aside>
+
+<main class="main">
+
+    <a class="back" href="/admin/courses">
+        ← Kurslara dön
+    </a>
+
+    <div class="header">
+
+        <div class="title">
+
+            <div class="icon">
+                {{ course.icon }}
+            </div>
+
+            <div>
+                <h1>{{ course.name }}</h1>
+                <div class="subtitle">
+                    {{ course.description }}
+                </div>
+            </div>
+
+        </div>
+
+        <button class="primary" onclick="openModal()">
+            + Unit Ekle
+        </button>
+
+    </div>
+
+    <div class="units">
+
+        {% for unit in units %}
+
+        <section class="unit">
+
+            <div class="unit-top">
+
+                <div>
+                    <div class="unit-number">
+                        UNIT {{ unit.order }}
+                    </div>
+
+                    <h2>{{ unit.title }}</h2>
+
+                    <p>
+                        {{ unit.description }}
+                    </p>
+                </div>
+
+                <a href="/admin/units/{{ unit.id }}">
+                    →
+                </a>
+
+            </div>
+
+            <div class="lessons">
+
+                {% for lesson in lessons if lesson.unit_id == unit.id %}
+
+                <a
+                    class="lesson"
+                    href="/admin/lessons/{{ lesson.id }}"
+                >
+                    {{ lesson.icon }}
+                    {{ lesson.title }}
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% else %}
+
+        <section class="unit">
+            Henüz unit oluşturulmamış.
+        </section>
+
+        {% endfor %}
+
+    </div>
+
+</main>
+
+</div>
+
+<div class="modal" id="modal">
+
+    <div class="modal-card">
+
+        <div class="modal-head">
+            <h2>Yeni Unit</h2>
+            <button class="close" onclick="closeModal()">×</button>
+        </div>
+
+        <form method="post"
+              action="/admin/courses/{{ course.id }}/units/create">
+
+            <label>Unit adı</label>
+
+            <input
+                name="title"
+                placeholder="Örn. Temeller"
+                required
+            >
+
+            <label>Açıklama</label>
+
+            <textarea
+                name="description"
+                placeholder="Bu ünitede ne öğrenilecek?"
+            ></textarea>
+
+            <label>Sıra</label>
+
+            <input
+                name="order"
+                type="number"
+                value="{{ (units|length) + 1 }}"
+            >
+
+            <button class="submit">
+                Unit Oluştur
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function openModal() {
+    document.getElementById("modal").classList.add("open");
+}
+
+function closeModal() {
+    document.getElementById("modal").classList.remove("open");
+}
+</script>
+
+</body>
+</html>

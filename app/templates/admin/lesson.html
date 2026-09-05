@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{{ lesson.title }} · LinguaFlow</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    background: #f6f8fc;
+    color: #172033;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        Inter,
+        sans-serif;
+}
+
+.main {
+    max-width: 1100px;
+    margin: auto;
+    padding: 42px 22px;
+}
+
+.back {
+    color: #7d8597;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.audio-upload {
+    margin-top: 15px;
+
+    padding: 18px;
+
+    border: 1px dashed #cfd6e2;
+
+    border-radius: 17px;
+
+    background: #f8fafc;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+.delete-question {
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.delete-question:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+.delete-question:active {
+    transform: scale(0.97);
+}
+
+.audio-icon {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    display: grid;
+    place-items: center;
+
+    background: #eef8e8;
+
+    font-size: 24px;
+}
+
+.audio-upload p {
+    margin: 4px 0 0;
+
+    color: #9299aa;
+
+    font-size: 12px;
+}
+
+#optionsContainer {
+    display: grid;
+    gap: 8px;
+}
+
+#optionsContainer input {
+    margin: 0;
+}
+
+.header {
+    margin-top: 25px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 34px;
+}
+
+.subtitle {
+    margin-top: 7px;
+    color: #8b93a6;
+}
+
+.primary {
+    border: 0;
+
+    background: #58cc02;
+    color: white;
+
+    padding: 14px 19px;
+
+    border-radius: 13px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(88,204,2,.18);
+}
+
+.questions {
+    margin-top: 35px;
+
+    display: grid;
+    gap: 15px;
+}
+
+.question {
+    background: white;
+
+    border: 1px solid #e8ecf2;
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    box-shadow:
+        0 7px 25px rgba(31,45,61,.04);
+}
+
+.number {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    border-radius: 14px;
+
+    background: #eef8e8;
+
+    display: grid;
+    place-items: center;
+
+    color: #4c9d00;
+
+    font-weight: 900;
+}
+
+.question-content {
+    flex: 1;
+}
+
+.type {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 8px;
+
+    background: #f0f3f8;
+
+    color: #717a8e;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+}
+
+.prompt {
+    margin-top: 8px;
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+.answer {
+    margin-top: 5px;
+
+    color: #58a600;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(17,24,39,.32);
+
+    backdrop-filter: blur(6px);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 10;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-card {
+
+    width: 100%;
+    max-width: 620px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 26px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.18);
+
+    animation: pop .2s ease;
+}
+
+@keyframes pop {
+
+    from {
+        opacity: 0;
+        transform: scale(.97) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+}
+
+.modal-head {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.modal-head h2 {
+    margin: 0;
+}
+
+.close {
+
+    border: 0;
+
+    background: #f1f3f7;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 11px;
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+label {
+
+    display: block;
+
+    margin: 15px 0 7px;
+
+    font-size: 13px;
+
+    font-weight: 900;
+}
+
+input,
+textarea,
+select {
+
+    width: 100%;
+
+    border: 1px solid #dfe4ec;
+
+    border-radius: 13px;
+
+    padding: 13px 14px;
+
+    font: inherit;
+
+    outline: none;
+
+    background: white;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+
+    border-color: #58cc02;
+
+    box-shadow:
+        0 0 0 4px rgba(88,204,2,.08);
+}
+
+textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+.hint {
+
+    margin-top: 6px;
+
+    color: #9299aa;
+
+    font-size: 12px;
+}
+
+.submit {
+
+    width: 100%;
+
+    margin-top: 23px;
+
+    padding: 15px;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    background: #58cc02;
+
+    color: white;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+.question-type-fields {
+    display: none;
+}
+
+.question-type-fields.active {
+    display: block;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<main class="main">
+
+<a
+    class="back"
+    href="/admin/units/{{ lesson.unit_id }}"
+>
+← Unit'a dön
+</a>
+
+<div class="header">
+
+<div>
+
+<h1>
+{{ lesson.icon }}
+{{ lesson.title }}
+</h1>
+
+<div class="subtitle">
+{{ lesson.xp_reward }} XP · {{ questions|length }} soru
+</div>
+
+</div>
+
+<button
+    class="primary"
+    onclick="openModal()"
+>
++ Soru Ekle
+</button>
+
+</div>
+
+
+<div class="questions">
+
+{% for question in questions %}
+
+<div class="question">
+
+<div class="number">
+{{ loop.index }}
+</div>
+
+<div class="question-content">
+
+<span class="type">
+{{ question.type }}
+</span>
+
+<div class="prompt">
+{{ question.prompt }}
+</div>
+
+
+<div class="answer">
+✓ {{ question.answer }}
+</div>
+
+<form
+    method="post"
+    action="/admin/lessons/{{ lesson.id }}/questions/{{ question.id }}/delete"
+    onsubmit="return confirm('Bu soruyu silmek istediğine emin misin?');"
+>
+    <button type="submit" class="delete-question">
+        🗑️ Sil
+    </button>
+</form>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="question">
+
+<div class="question-content">
+
+<div class="prompt">
+Henüz soru yok.
+</div>
+
+<div class="answer">
+İlk sorunu oluştur.
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</main>
+
+
+<!-- QUESTION MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-card">
+
+<div class="modal-head">
+
+<div>
+    <div style="
+        color:#58a600;
+        font-size:12px;
+        font-weight:900;
+        text-transform:uppercase;
+        margin-bottom:5px;
+    ">
+        Question Builder
+    </div>
+
+    <h2 id="builderTitle">
+        Yeni Soru
+    </h2>
+</div>
+
+<button
+    class="close"
+    onclick="closeModal()"
+>
+×
+</button>
+
+</div>
+
+
+<form
+    method="post"
+    enctype="multipart/form-data"
+    action="/admin/lessons/{{ lesson.id }}/questions/create"
+    id="questionForm"
+>
+
+    <!-- QUESTION TYPE -->
+
+    <label for="questionType">
+        Soru tipi
+    </label>
+
+    <select
+        name="type"
+        id="questionType"
+        onchange="changeQuestionType()"
+    >
+        <option value="multiple_choice">
+            ❓ Multiple Choice
+        </option>
+
+        <option value="translation">
+            ✍️ Translation
+        </option>
+
+        <option value="fill_blank">
+            🔤 Fill Blank
+        </option>
+
+        <option value="word_order">
+            🧩 Word Ordering
+        </option>
+
+        <option value="listening">
+            🎧 Listening
+        </option>
+    </select>
+
+
+    <!-- COMMON PROMPT -->
+
+    <div id="promptGroup">
+
+        <label id="promptLabel">
+            Soru
+        </label>
+
+        <textarea
+            name="prompt"
+            id="prompt"
+            placeholder="'Hello' ne demektir?"
+            required
+        ></textarea>
+
+    </div>
+
+
+    <!-- MULTIPLE CHOICE -->
+<div id="multipleChoiceFields" class="question-type-fields">
+
+    <label>Şıklar</label>
+
+    <div id="optionsContainer">
+
+        <div class="option-row">
+            <input
+                type="radio"
+                name="correct_option"
+                value="0"
+            >
+
+            <input
+                type="text"
+                name="options"
+                placeholder="Merhaba"
+            >
+        </div>
+
+        <div class="option-row">
+            <input
+                type="radio"
+                name="correct_option"
+                value="1"
+            >
+
+            <input
+                type="text"
+                name="options"
+                placeholder="Güle güle"
+            >
+        </div>
+
+        <div class="option-row">
+            <input
+                type="radio"
+                name="correct_option"
+                value="2"
+            >
+
+            <input
+                type="text"
+                name="options"
+                placeholder="Teşekkürler"
+            >
+        </div>
+
+        <div class="option-row">
+            <input
+                type="radio"
+                name="correct_option"
+                value="3"
+            >
+
+            <input
+                type="text"
+                name="options"
+                placeholder="Lütfen"
+            >
+        </div>
+
+    </div>
+
+    <div class="hint">
+        Doğru cevabın yanındaki daireyi seç.
+    </div>
+
+</div>
+
+
+    <!-- TRANSLATION -->
+
+    <div
+        id="translationFields"
+        class="question-type-fields"
+    >
+
+        <label>
+            Doğru çeviri
+        </label>
+
+        <input
+            type="text"
+            name="translation_answer"
+            placeholder="I am a student"
+        >
+
+        <div class="hint">
+            Öğrencinin çevirmesi gereken doğru cevap.
+        </div>
+
+    </div>
+
+
+    <!-- FILL BLANK -->
+
+    <div
+        id="fillBlankFields"
+        class="question-type-fields"
+    >
+
+        <label>
+            Boşluğun doğru cevabı
+        </label>
+
+        <input
+            type="text"
+            name="fill_blank_answer"
+            placeholder="am"
+        >
+
+        <div class="hint">
+            Örn: "I ___ a student." → am
+        </div>
+
+    </div>
+
+
+    <!-- WORD ORDER -->
+
+    <div
+        id="wordOrderFields"
+        class="question-type-fields"
+    >
+
+        <label>
+            Kelime parçaları
+        </label>
+
+        <textarea
+            name="words"
+            placeholder="I | am | a | student"
+        ></textarea>
+
+        <div class="hint">
+            Kelimeleri | karakteriyle ayır.
+        </div>
+
+
+        <label>
+            Doğru cümle
+        </label>
+
+        <input
+            type="text"
+            name="word_order_answer"
+            placeholder="I am a student"
+        >
+
+    </div>
+
+
+    <!-- LISTENING -->
+
+    <div
+        id="listeningFields"
+        class="question-type-fields"
+    >
+
+        <label>
+            Ses dosyası
+        </label>
+
+        <div class="audio-upload">
+
+            <div class="audio-icon">
+                🎧
+            </div>
+
+            <div>
+                <strong>
+                    Ses dosyası yükle
+                </strong>
+
+                <p>
+                    MP3, WAV, M4A veya OGG
+                </p>
+            </div>
+
+        </div>
+
+        <input
+            type="file"
+            name="audio"
+            accept=".mp3,.wav,.m4a,.ogg,audio/*"
+        >
+
+
+        <label>
+            Öğrencinin cevabı
+        </label>
+
+        <input
+            type="text"
+            name="listening_answer"
+            placeholder="Hello"
+        >
+
+        <div class="hint">
+            Öğrenci sesi dinledikten sonra cevabı yazacak.
+        </div>
+
+    </div>
+
+
+    <!-- EXPLANATION -->
+
+    <label for="explanation">
+        Açıklama
+    </label>
+
+    <textarea
+        name="explanation"
+        id="explanation"
+        placeholder="Cevabın neden doğru olduğunu açıkla..."
+    ></textarea>
+
+
+    <!-- ORDER -->
+
+    <label for="order">
+        Sıra
+    </label>
+
+    <input
+        name="order"
+        id="order"
+        type="number"
+        value="{{ (questions|length) + 1 }}"
+    >
+
+
+    <!-- SUBMIT -->
+
+    <button
+        type="submit"
+        class="submit"
+    >
+        ✨ Soruyu Oluştur
+    </button>
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+document.getElementById("questionForm").addEventListener("submit", function (event) {
+
+    const type = document.getElementById("questionType").value;
+
+    if (type === "multiple_choice") {
+
+        const selected = document.querySelector(
+            'input[name="correct_option"]:checked'
+        );
+
+        if (!selected) {
+            event.preventDefault();
+
+            alert("Lütfen doğru cevabı seç.");
+
+            return;
+        }
+    }
+
+});
+
+function changeQuestionType() {
+
+    const type = document.getElementById("questionType").value;
+
+    /*
+     * ========================================
+     * TÜM ALANLARI GİZLE
+     * ========================================
+     */
+
+    document
+        .querySelectorAll(".question-type-fields")
+        .forEach(field => {
+            field.classList.remove("active");
+        });
+
+
+    /*
+     * ========================================
+     * SEÇİLEN ALANI GÖSTER
+     * ========================================
+     */
+
+    const fieldMap = {
+
+        "multiple_choice": "multipleChoiceFields",
+        "translation": "translationFields",
+        "fill_blank": "fillBlankFields",
+        "word_order": "wordOrderFields",
+        "listening": "listeningFields"
+
+    };
+
+    const activeField = document.getElementById(
+        fieldMap[type]
+    );
+
+    if (activeField) {
+        activeField.classList.add("active");
+    }
+
+
+    /*
+     * ========================================
+     * COMMON PROMPT
+     * ========================================
+     */
+
+    const promptLabel =
+        document.getElementById("promptLabel");
+
+    const prompt =
+        document.getElementById("prompt");
+
+
+    /*
+     * ========================================
+     * MULTIPLE CHOICE
+     * ========================================
+     */
+
+    if (type === "multiple_choice") {
+
+        promptLabel.textContent = "Soru";
+
+        prompt.placeholder =
+            "'Hello' ne demektir?";
+
+    }
+
+
+    /*
+     * ========================================
+     * TRANSLATION
+     * ========================================
+     */
+
+    else if (type === "translation") {
+
+        promptLabel.textContent =
+            "Çevrilecek cümle";
+
+        prompt.placeholder =
+            "Ben bir öğrenciyim.";
+
+    }
+
+
+    /*
+     * ========================================
+     * FILL BLANK
+     * ========================================
+     */
+
+    else if (type === "fill_blank") {
+
+        promptLabel.textContent =
+            "Cümle";
+
+        prompt.placeholder =
+            "I ___ a student.";
+
+    }
+
+
+    /*
+     * ========================================
+     * WORD ORDER
+     * ========================================
+     */
+
+    else if (type === "word_order") {
+
+        promptLabel.textContent =
+            "Görev";
+
+        prompt.placeholder =
+            "Kelimeleri doğru sıraya koy.";
+
+    }
+
+
+    /*
+     * ========================================
+     * LISTENING
+     * ========================================
+     */
+
+    else if (type === "listening") {
+
+        promptLabel.textContent =
+            "Listening görevi";
+
+        prompt.placeholder =
+            "Sesi dinle ve duyduğun cümleyi yaz.";
+
+    }
+
+}
+
+
+/*
+ * ========================================
+ * MODAL
+ * ========================================
+ */
+
+function openModal() {
+
+    const modal =
+        document.getElementById("modal");
+
+    modal.classList.add("open");
+
+    changeQuestionType();
+
+}
+
+
+function closeModal() {
+
+    const modal =
+        document.getElementById("modal");
+
+    modal.classList.remove("open");
+
+}
+
+
+/*
+ * ========================================
+ * SAYFA AÇILDIĞINDA
+ * ========================================
+ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        changeQuestionType();
+
+    }
+);
+
+</script>
+
+</body>
+</html>

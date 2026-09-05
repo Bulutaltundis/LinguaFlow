@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<head> 
+    <style>
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+
+    <!-- MAIN -->
+
+    <main class="leaderboardMain">
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h1>🏆 Liderlik</h1>
+
+                <p>
+                    Bu hafta kim daha fazla XP kazanacak?
+                </p>
+
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat-pill">
+                    🔥 {{ user.streak }}
+                </div>
+
+                <div class="stat-pill">
+                    ⚡ {{ user.xp }} XP
+                </div>
+
+                <div class="stat-pill">
+                    ❤️ {{ user.hearts }}
+                </div>
+
+                <div class="stat-pill">
+                    💎 {{ user.gems }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+            <section class="league-card">
+
+                <div class="league-header">
+
+                    <div class="league-title">
+
+                        <div class="league-icon">
+                            🏆
+                        </div>
+
+                        <div>
+
+                            <h2>Haftalık Liderlik</h2>
+
+                            <span>
+                                XP kazan, sıralamada yüksel
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="week-badge">
+                        Bu hafta
+                    </div>
+
+                </div>
+
+
+                {% if leaderboard|length >= 1 %}
+
+                <div class="podium">
+
+                    {% set first = leaderboard[0] %}
+
+                    <div class="podium-user first">
+
+                        <div class="crown">
+                            👑
+                        </div>
+
+                        <div class="avatar">
+                            🦉
+                        </div>
+
+                        <div class="podium-name">
+                            {{ first.user.username }}
+                        </div>
+
+                        <div class="podium-xp">
+                            ⚡ {{ first.xp }} XP
+                        </div>
+
+                        <div class="podium-block">
+                            1
+                        </div>
+
+                    </div>
+
+
+                    {% if leaderboard|length >= 2 %}
+
+                    {% set second = leaderboard[1] %}
+
+                    <div class="podium-user second">
+
+                        <div class="avatar">
+                            🦊
+                        </div>
+
+                        <div class="podium-name">
+                            {{ second.user.username }}
+                        </div>
+
+                        <div class="podium-xp">
+                            ⚡ {{ second.xp }} XP
+                        </div>
+
+                        <div class="podium-block">
+                            2
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if leaderboard|length >= 3 %}
+
+                    {% set third = leaderboard[2] %}
+
+                    <div class="podium-user third">
+
+                        <div class="avatar">
+                            🐼
+                        </div>
+
+                        <div class="podium-name">
+                            {{ third.user.username }}
+                        </div>
+
+                        <div class="podium-xp">
+                            ⚡ {{ third.xp }} XP
+                        </div>
+
+                        <div class="podium-block">
+                            3
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if leaderboard|length > 3 %}
+
+                <div class="ranking">
+
+                    {% for entry in leaderboard[3:] %}
+
+                    <div
+                        class="ranking-row {% if entry.user.id == user.id %}current{% endif %}"
+                    >
+
+                        <div class="rank">
+                            #{{ entry.position }}
+                        </div>
+
+
+                        <div class="rank-user">
+
+                            <div class="small-avatar">
+
+                                {% if loop.index % 3 == 0 %}
+                                    🐼
+                                {% elif loop.index % 2 == 0 %}
+                                    🦊
+                                {% else %}
+                                    🐱
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="rank-name">
+
+                                {{ entry.user.username }}
+
+                                {% if entry.user.id == user.id %}
+
+                                    <span class="you">
+                                        SEN
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="rank-xp">
+
+                            ⚡ {{ entry.xp }}
+
+                            <span>XP</span>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+
+                {% else %}
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        Henüz liderlik oluşmadı
+                    </h3>
+
+                    <p>
+                        İlk dersini tamamla ve haftalık
+                        liderlik tablosunda yerini al.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+
+            {% if current_entry %}
+
+            <div class="your-rank">
+
+                <div class="your-rank-left">
+
+                    <div class="your-rank-icon">
+                        🏆
+                    </div>
+
+                    <div>
+
+                        <div class="your-rank-title">
+                            Senin sıralaman
+                        </div>
+
+                        <div class="your-rank-sub">
+                            Bu hafta
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="your-rank-xp">
+                        #{{ current_entry.position }}
+                        · {{ current_entry.xp }} XP
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+{% endblock %}
