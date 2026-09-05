@@ -1,7 +1,7 @@
 import os
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 
@@ -41,3 +41,8 @@ def refund_page(request: Request):
 @router.get("/contact", response_class=HTMLResponse)
 def contact_page(request: Request):
     return templates.TemplateResponse(request=request, name="public/contact.html", context={})
+
+
+@router.get("/pricing", include_in_schema=False)
+def pricing_page():
+    return RedirectResponse(url="/", status_code=302)

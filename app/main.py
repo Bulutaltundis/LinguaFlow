@@ -71,7 +71,7 @@ def startup():
         seed_database(session)
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 def home(request: Request, session: Session = Depends(get_session)):
     return public.landing_page(request, session)
 
