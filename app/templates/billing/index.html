@@ -17,7 +17,7 @@ document.querySelectorAll('.checkout-button').forEach(function(button) {
   button.addEventListener('click', function() {
     const priceId = button.dataset.priceId;
     if (!priceId) { alert('Paddle fiyat ID yapılandırılmamış.'); return; }
-    Paddle.Checkout.open({items: [{priceId: priceId, quantity: 1}], customer: {email: ''}, customData: {user_id: '{{ user.id }}', plan: button.dataset.plan}});
+    Paddle.Checkout.open({items: [{priceId: priceId, quantity: 1}], customer: {email: 'yourmail@example.com'}, customData: {user_id: '{{ user.id }}', plan: button.dataset.plan}});
   });
 });
 </script>
