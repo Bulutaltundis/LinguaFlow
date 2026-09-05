@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.progress import UserProgress
 from app.models.lesson import Lesson
 from app.models.classroom import Classroom, ClassMembership
+from app.core.auth import get_current_user
 from app.models.shop import ShopItem, Purchase
 
 

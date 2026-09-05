@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 from app.core.database import get_session
 from app.core.security import hash_password, verify_password
 from app.models.user import User
+from app.core.auth import create_session, revoke_session, SESSION_COOKIE, CSRF_COOKIE, cookie_kwargs
 
 
 templates = Jinja2Templates(directory="app/templates")
@@ -32,7 +33,6 @@ def register(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
-    role: str = Form("student"),
     session: Session = Depends(get_session),
 ):
     username = username.strip()
@@ -81,14 +81,10 @@ def register(
             status_code=400,
         )
 
-    if role not in {"student", "teacher"}:
-        role = "student"
-
     user = User(
         username=username,
         email=email,
         password_hash=hash_password(password),
-        role=role,
     )
 
     session.add(user)
@@ -100,12 +96,9 @@ def register(
         status_code=303,
     )
 
-    response.set_cookie(
-        key="session_user_id",
-        value=str(user.id),
-        httponly=True,
-        samesite="lax",
-    )
+    token, csrf = create_session(user, session)
+    response.set_cookie(key=SESSION_COOKIE, value=token, **cookie_kwargs(request))
+    response.set_cookie(key=CSRF_COOKIE, value=csrf, httponly=False, secure=request.url.scheme == "https", samesite="lax", max_age=14 * 86400)
 
     return response
 
@@ -151,23 +144,22 @@ def login(
         status_code=303,
     )
 
-    response.set_cookie(
-        key="session_user_id",
-        value=str(user.id),
-        httponly=True,
-        samesite="lax",
-    )
+    token, csrf = create_session(user, session)
+    response.set_cookie(key=SESSION_COOKIE, value=token, **cookie_kwargs(request))
+    response.set_cookie(key=CSRF_COOKIE, value=csrf, httponly=False, secure=request.url.scheme == "https", samesite="lax", max_age=14 * 86400)
 
     return response
 
 
 @router.post("/logout")
-def logout():
+def logout(request: Request, session: Session = Depends(get_session)):
+    revoke_session(request, session)
     response = RedirectResponse(
         url="/",
         status_code=303,
     )
 
-    response.delete_cookie("session_user_id")
+    response.delete_cookie(SESSION_COOKIE)
+    response.delete_cookie(CSRF_COOKIE)
 
     return response

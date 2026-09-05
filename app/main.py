@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Depends, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 
 from sqlmodel import Session
 
@@ -19,13 +22,22 @@ from app.routers import (
     admin,
     leaderboard,
 )
+from app.core.middleware import SecurityMiddleware
+from app.core.auth import get_current_user
+from app.core.database import get_session
+from app.models.user import User
 
 
+production = os.getenv("APP_ENV", "development").lower() == "production"
 app = FastAPI(
     title="LinguaFlow",
     description="Gamified language learning platform",
     version="0.3.0",
+    docs_url=None if production else "/docs",
+    redoc_url=None if production else "/redoc",
+    openapi_url=None if production else "/openapi.json",
 )
+app.add_middleware(SecurityMiddleware)
 
 
 app.mount(
@@ -33,6 +45,16 @@ app.mount(
     StaticFiles(directory="app/static"),
     name="static",
 )
+
+@app.get("/media/audio/{filename}")
+def audio_file(filename: str, request: Request, session=Depends(get_session)):
+    if not get_current_user(request, session):
+        return RedirectResponse("/auth/login", status_code=303)
+    safe_name = Path(filename).name
+    path = Path("app/uploads/audio") / safe_name
+    if safe_name != filename or not path.is_file():
+        return RedirectResponse("/", status_code=404)
+    return FileResponse(path)
 
 
 @app.on_event("startup")

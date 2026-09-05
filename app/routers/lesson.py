@@ -13,6 +13,8 @@ from app.models.progress import UserProgress
 from app.models.user import User
 from app.models.xp_event import XPEvent
 from app.core.activity import register_activity
+from app.core.auth import get_current_user as auth_current_user
+from app.models.attempt import QuestionAttempt
 
 
 templates = Jinja2Templates(directory="app/templates")
@@ -28,17 +30,7 @@ def get_current_user(
     request: Request,
     session: Session,
 ):
-    user_id = request.cookies.get("session_user_id")
-
-    if not user_id:
-        return None
-
-    try:
-        user_id = int(user_id)
-    except ValueError:
-        return None
-
-    return session.get(User, user_id)
+    return auth_current_user(request, session)
 
 
 def prepare_question(question: Question):
@@ -114,6 +106,10 @@ def lesson_page(
             "Bu derste soru yok.",
             status_code=404,
         )
+
+    existing_progress = session.exec(select(UserProgress).where((UserProgress.user_id == user.id) & (UserProgress.lesson_id == lesson_id) & (UserProgress.completed == True))).first()
+    if existing_progress:
+        return RedirectResponse("/dashboard", status_code=303)
 
     question = questions[0]
 
@@ -208,6 +204,9 @@ def answer_question(
             status_code=400,
         )
 
+    if session.exec(select(QuestionAttempt).where((QuestionAttempt.user_id == user.id) & (QuestionAttempt.lesson_id == lesson_id) & (QuestionAttempt.question_index == question_index))).first():
+        return HTMLResponse("Bu soru daha önce cevaplandı.", status_code=409)
+
     # Cevabı normalize et.
     user_answer = normalize_answer(answer)
     correct_answer = normalize_answer(question.answer)
@@ -237,6 +236,8 @@ def answer_question(
     else:
 
         correct = user_answer == correct_answer
+
+    session.add(QuestionAttempt(user_id=user.id, lesson_id=lesson_id, question_id=question.id, question_index=question_index, answer=answer[:500], correct=correct))
 
     print("RESULT:", correct)
     print("================================")

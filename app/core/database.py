@@ -1,7 +1,8 @@
+import os
 from sqlmodel import SQLModel, Session, create_engine, text
 
 
-DATABASE_URL = "sqlite:///./linguaflow.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./linguaflow.db")
 
 engine = create_engine(
     DATABASE_URL,

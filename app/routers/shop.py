@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session, select
+from sqlmodel import Session, select, update
 
 from app.core.auth import get_current_user
 from app.core.database import get_session
 from app.models.shop import ShopItem, Purchase
 from app.models.classroom import Classroom, ClassMembership
+from app.models.user import User
 
 
 router = APIRouter(
@@ -158,7 +159,14 @@ def buy_item(
     # PAYMENT
     # ========================================================
 
-    user.gems -= item.price
+    debit = session.exec(
+        update(User)
+        .where((User.id == user.id) & (User.gems >= item.price))
+        .values(gems=User.gems - item.price)
+    )
+    if debit.rowcount != 1:
+        session.rollback()
+        return RedirectResponse("/shop?error=not_enough_gems", status_code=303)
 
     purchase = Purchase(
         user_id=user.id,
@@ -166,7 +174,6 @@ def buy_item(
         quantity=1,
     )
 
-    session.add(user)
     session.add(purchase)
 
     session.commit()

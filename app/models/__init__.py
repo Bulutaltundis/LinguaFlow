@@ -5,6 +5,8 @@ from app.models.progress import UserProgress
 from app.models.xp_event import XPEvent
 from app.models.shop import ShopItem, Purchase
 from app.models.classroom import Classroom, ClassMembership, Assignment, ClassShopItem
+from app.models.session import UserSession
+from app.models.attempt import QuestionAttempt
 
 
 __all__ = [
@@ -21,4 +23,6 @@ __all__ = [
     "ClassMembership",
     "Assignment",
     "ClassShopItem",
+    "UserSession",
+    "QuestionAttempt",
 ]

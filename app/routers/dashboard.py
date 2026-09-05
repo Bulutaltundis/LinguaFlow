@@ -10,6 +10,7 @@ from app.models.progress import UserProgress
 from app.models.user import User
 from app.models.classroom import Classroom, ClassMembership
 from app.core.activity import register_activity
+from app.core.auth import get_current_user as auth_current_user
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -20,17 +21,7 @@ router = APIRouter(
 
 
 def get_current_user(request: Request, session: Session):
-    user_id = request.cookies.get("session_user_id")
-
-    if not user_id:
-        return None
-
-    try:
-        user_id = int(user_id)
-    except ValueError:
-        return None
-
-    return session.get(User, user_id)
+    return auth_current_user(request, session)
 
 
 def calculate_level(xp: int):

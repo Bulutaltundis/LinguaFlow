@@ -19,6 +19,7 @@ from app.models.course import Course
 from app.models.lesson import Unit, Lesson, Question
 from app.models.user import User
 from app.models.shop import ShopItem
+from app.core.auth import get_current_user as auth_current_user
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -29,17 +30,7 @@ router = APIRouter(
 
 
 def current_user(request: Request, session: Session):
-    user_id = request.cookies.get("session_user_id")
-
-    if not user_id:
-        return None
-
-    try:
-        user_id = int(user_id)
-    except ValueError:
-        return None
-
-    return session.get(User, user_id)
+    return auth_current_user(request, session)
 
 
 def require_admin(request: Request, session: Session):
@@ -485,7 +476,18 @@ async def create_question(
             f"{uuid.uuid4().hex}{extension}"
         )
 
-        audio_dir = "app/static/audio"
+        max_size = 10 * 1024 * 1024
+        content_type = (audio.content_type or "").lower()
+        allowed_mime = {".mp3": {"audio/mpeg", "audio/mp3"}, ".wav": {"audio/wav", "audio/x-wav"}, ".m4a": {"audio/mp4", "audio/x-m4a"}, ".ogg": {"audio/ogg", "application/ogg"}}
+        if content_type not in allowed_mime[extension]:
+            return HTMLResponse("Ses MIME türü dosya uzantısıyla uyuşmuyor.", status_code=400)
+        content = await audio.read(max_size + 1)
+        if len(content) > max_size:
+            return HTMLResponse("Ses dosyası en fazla 10 MB olabilir.", status_code=400)
+        signatures = {".mp3": (content.startswith(b"ID3") or content[:2] in (b"\xff\xfb", b"\xff\xf3", b"\xff\xf2")), ".wav": content.startswith(b"RIFF") and content[8:12] == b"WAVE", ".ogg": content.startswith(b"OggS"), ".m4a": content[4:8] == b"ftyp"}
+        if not signatures[extension]:
+            return HTMLResponse("Ses dosyasının içeriği doğrulanamadı.", status_code=400)
+        audio_dir = "app/uploads/audio"
 
         os.makedirs(
             audio_dir,
@@ -497,12 +499,10 @@ async def create_question(
             filename,
         )
 
-        content = await audio.read()
-
         with open(filepath, "wb") as file:
             file.write(content)
 
-        audio_url = f"/static/audio/{filename}"
+        audio_url = f"/media/audio/{filename}"
 
     # --------------------------------
     # CREATE QUESTION
