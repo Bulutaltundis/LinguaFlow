@@ -94,6 +94,7 @@
 .theme-ocean { --green:#1cb0f6; --green-dark:#0d8dc9; --green-soft:#eaf8ff; }
 .reward-hero { background:linear-gradient(135deg,#162a55,#3b58bc 60%,#7a66df); }
 .reward-success { color:#287d00; border-color:#bfe7a5; background:#efffe7; }
+.billing-page { max-width:1000px; padding-top:38px; padding-bottom:80px; }.billing-hero { padding:38px; border-radius:26px; color:#fff; background:linear-gradient(135deg,#172033,#703fd1); box-shadow:var(--shadow-lg); }.billing-hero > span { color:#e0d1ff; font-size:11px; font-weight:950; letter-spacing:1px; }.billing-hero h1 { margin:12px 0 8px; font-size:35px; }.billing-hero p { margin:0; color:#d7ccf3; }.plan-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:22px; }.plan-card { position:relative; padding:28px; border:1px solid var(--border); border-radius:23px; background:#fff; box-shadow:var(--shadow); }.plan-card.featured { border:2px solid #8b5cf6; background:linear-gradient(145deg,#fff,#fbf8ff); }.plan-badge { display:inline-block; padding:6px 9px; border-radius:7px; color:#6d45c4; background:#f0e8ff; font-size:9px; font-weight:950; letter-spacing:.6px; }.plan-card h2 { margin:18px 0 3px; font-size:22px; }.plan-period { color:var(--muted); font-weight:800; }.plan-card ul { margin:24px 0; padding:0; list-style:none; color:#526078; line-height:2.1; font-size:13px; font-weight:700; }.plan-card .class-btn { width:100%; }.billing-note { margin:18px 0; color:var(--muted); text-align:center; font-size:11px; }
 .reward-columns { display:grid; grid-template-columns:1.15fr .85fr; gap:18px; margin-top:20px; }
 .task-list { display:flex; flex-direction:column; gap:10px; }
 .task-row { display:flex; align-items:center; gap:12px; padding:13px; border:1px solid #edf0f5; border-radius:15px; background:#fafbfc; }
@@ -171,6 +172,7 @@
 @media (max-width:900px) { .class-page { padding-top:24px; } .class-grid, .course-select-grid { grid-template-columns:repeat(2,1fr); } .detail-columns { grid-template-columns:1fr; } .detail-columns aside { display:grid; grid-template-columns:1fr 1fr; gap:18px; } }
 @media (max-width:650px) { .class-action-grid, .class-grid, .course-select-grid, .detail-columns aside { grid-template-columns:1fr; } .class-hero, .class-detail-hero { padding:27px 22px; } .class-hero h1, .class-detail-hero h1 { font-size:29px; } .hero-orb { display:none; } .code-card { min-width:140px; padding:11px; } .class-detail-hero { align-items:flex-start; gap:16px; flex-direction:column; } .class-stats { grid-template-columns:1fr 1fr; } .inline-form { flex-direction:column; } .detail-actions .class-btn { flex:1; } .member > span { display:none; } }
 @media (max-width:650px) { .settings-hero, .settings-section { grid-template-columns:1fr; display:flex; flex-direction:column; align-items:flex-start; } .settings-preview { width:100%; min-width:0; } .save-profile { align-self:stretch; } }
+@media (max-width:650px) { .plan-grid { grid-template-columns:1fr; }.billing-hero { padding:27px 22px; }.billing-hero h1 { font-size:28px; } }
 @media (max-width:800px) { .reward-columns { grid-template-columns:1fr; } }
 
 

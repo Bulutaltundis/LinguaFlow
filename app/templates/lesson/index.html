@@ -621,7 +621,7 @@
             </div>
 
             <div class="hearts">
-                ❤️ {{ user.hearts }}
+                ❤️ {{ '∞' if user.subscription_plan and user.subscription_status in ['active', 'trialing'] else user.hearts }}
             </div>
 
         </div>

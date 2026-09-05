@@ -37,6 +37,10 @@ class User(SQLModel, table=True):
     theme: str = Field(default="default")
     cosmetic: str = Field(default="")
     avatar: str = Field(default="🧑‍💻")
+    subscription_plan: str | None = None
+    subscription_status: str = Field(default="free")
+    paddle_customer_id: str | None = None
+    paddle_subscription_id: str | None = None
 
     last_active: datetime | None = None
 

@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.classroom import Classroom, ClassMembership
 from app.core.activity import register_activity
 from app.core.auth import get_current_user as auth_current_user
+from app.core.billing import has_unlimited_hearts
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -62,6 +63,9 @@ def dashboard(
         )
 
     register_activity(user, session)
+    if not has_unlimited_hearts(user) and user.hearts > 5:
+        user.hearts = 5
+        session.add(user)
 
     if class_id is None:
         saved_class = request.cookies.get("active_class_id")

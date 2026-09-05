@@ -8,6 +8,7 @@ from app.core.database import get_session
 from app.models.shop import ShopItem, Purchase
 from app.models.classroom import Classroom, ClassMembership
 from app.models.user import User
+from app.core.billing import has_unlimited_hearts
 
 
 router = APIRouter(
@@ -118,12 +119,10 @@ def buy_item(
     # ========================================================
 
     if item.type == "heart":
-
-        user.hearts += 1
+        user.hearts = user.hearts + 1 if has_unlimited_hearts(user) else min(5, user.hearts + 1)
 
     elif item.type == "heart_pack":
-
-        user.hearts += 5
+        user.hearts = user.hearts + 5 if has_unlimited_hearts(user) else min(5, user.hearts + 5)
 
     elif item.type == "streak_freeze":
         user.streak_freezes += 1

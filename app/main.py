@@ -15,6 +15,10 @@ from app.routers import profile
 from app.routers import classes
 from app.routers import courses
 from app.routers import rewards
+from app.routers import billing
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from app.routers import (
     auth,
@@ -97,3 +101,4 @@ app.include_router(profile.router)
 app.include_router(classes.router)
 app.include_router(courses.router)
 app.include_router(rewards.router)
+app.include_router(billing.router)

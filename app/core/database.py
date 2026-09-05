@@ -17,7 +17,7 @@ def create_db_and_tables():
         user_columns = connection.execute(text("PRAGMA table_info(user)")).all()
         if not any(row[1] == "role" for row in user_columns):
             connection.execute(text("ALTER TABLE user ADD COLUMN role VARCHAR DEFAULT 'student'"))
-        for column, definition in (("streak_freezes", "INTEGER DEFAULT 0"), ("xp_boost_until", "DATETIME"), ("theme", "VARCHAR DEFAULT 'default'"), ("cosmetic", "VARCHAR DEFAULT ''"), ("avatar", "VARCHAR DEFAULT '🧑‍💻'")):
+        for column, definition in (("streak_freezes", "INTEGER DEFAULT 0"), ("xp_boost_until", "DATETIME"), ("theme", "VARCHAR DEFAULT 'default'"), ("cosmetic", "VARCHAR DEFAULT ''"), ("avatar", "VARCHAR DEFAULT '🧑‍💻'"), ("subscription_plan", "VARCHAR"), ("subscription_status", "VARCHAR DEFAULT 'free'"), ("paddle_customer_id", "VARCHAR"), ("paddle_subscription_id", "VARCHAR")):
             if not any(row[1] == column for row in user_columns):
                 connection.execute(text(f"ALTER TABLE user ADD COLUMN {column} {definition}"))
         shop_columns = connection.execute(text("PRAGMA table_info(shopitem)")).all()

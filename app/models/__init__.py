@@ -8,6 +8,7 @@ from app.models.classroom import Classroom, ClassMembership, Assignment, ClassSh
 from app.models.session import UserSession
 from app.models.attempt import QuestionAttempt
 from app.models.reward import Chest, UserChest, UserTask
+from app.models.billing import Subscription, PaddleEvent
 
 
 __all__ = [
@@ -29,4 +30,6 @@ __all__ = [
     "Chest",
     "UserChest",
     "UserTask",
+    "Subscription",
+    "PaddleEvent",
 ]

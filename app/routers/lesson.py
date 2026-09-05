@@ -16,6 +16,7 @@ from app.core.activity import register_activity
 from app.core.auth import get_current_user as auth_current_user
 from app.models.attempt import QuestionAttempt
 from app.services.rewards import update_task
+from app.core.billing import has_unlimited_hearts
 
 
 templates = Jinja2Templates(directory="app/templates")
@@ -83,7 +84,7 @@ def lesson_page(
             status_code=303,
         )
 
-    if user.hearts <= 0:
+    if not has_unlimited_hearts(user) and user.hearts <= 0:
         return RedirectResponse("/shop?error=no_hearts", status_code=303)
 
     register_activity(user, session)
@@ -152,7 +153,7 @@ def answer_question(
             status_code=303,
         )
 
-    if user.hearts <= 0:
+    if not has_unlimited_hearts(user) and user.hearts <= 0:
         return RedirectResponse("/shop?error=no_hearts", status_code=303)
 
     lesson = session.get(Lesson, lesson_id)
@@ -264,7 +265,8 @@ def answer_question(
         update_task(user.id, "questions", 1, session)
         update_task(user.id, "xp", xp_earned, session)
     else:
-        user.hearts = max(0, user.hearts - 1)
+        if not has_unlimited_hearts(user):
+            user.hearts = max(0, user.hearts - 1)
 
     session.add(user)
     session.commit()
