@@ -10,7 +10,7 @@
   </div>
 </div>
 {% if user %}
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script>
+<!-- <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script> -->
 Paddle.Environment.set('{{ paddle_env }}');
 Paddle.Initialize({token: '{{ client_token }}'});
 document.querySelectorAll('.checkout-button').forEach(function(button) {
