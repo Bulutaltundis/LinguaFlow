@@ -72,9 +72,14 @@ def startup():
 
 
 @app.get("/")
-def home():
+def home(request: Request, session: Session = Depends(get_session)):
+    if get_current_user(request, session):
+        return RedirectResponse(
+            url="/dashboard",
+            status_code=303,
+        )
     return RedirectResponse(
-        url="/dashboard",
+        url="/billing",
         status_code=303,
     )
 
