@@ -5,10 +5,9 @@
   <div class="billing-hero"><span>⚡ SUPER LINGUAFLOW</span><h1>Öğrenmenin sınırlarını kaldır.</h1><p>Sınırsız heart, daha hızlı ilerleme ve kesintisiz pratik.</p></div>
   {% if user.subscription_plan and user.subscription_status in ['active','trialing'] %}<div class="class-alert reward-success">✓ {{ 'Aylık' if user.subscription_plan == 'monthly' else 'Yıllık' }} Super LinguaFlow planın aktif.</div>{% endif %}
   <div class="plan-grid">
-    <article class="plan-card"><div class="plan-badge">ESNEK</div><h2>Super LinguaFlow</h2><div class="plan-period">Aylık</div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul><button class="class-btn green checkout-button" data-price-id="{{ monthly_price_id }}" data-plan="monthly">Aylık başla →</button></article>
-    <article class="plan-card featured"><div class="plan-badge">EN AVANTAJLI</div><h2>Super LinguaFlow</h2><div class="plan-period">Yıllık</div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>🎁 Yıllık özel avantajlar</li></ul><button class="class-btn purple checkout-button" data-price-id="{{ yearly_price_id }}" data-plan="yearly">Yıllık başla →</button></article>
+    <article class="plan-card"><div class="plan-badge">ESNEK</div><h2>Super LinguaFlow</h2><div class="plan-period">Aylık</div><div class="plan-price">100 TL <span>/ ay</span></div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul><button class="class-btn green checkout-button" data-price-id="{{ monthly_price_id }}" data-plan="monthly">Aylık başla →</button></article>
+    <article class="plan-card featured"><div class="plan-badge">EN AVANTAJLI</div><h2>Super LinguaFlow</h2><div class="plan-period">Yıllık</div><div class="plan-price">1.200 TL <span>/ yıl</span></div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul><button class="class-btn purple checkout-button" data-price-id="{{ yearly_price_id }}" data-plan="yearly">Yıllık başla →</button></article>
   </div>
-  <p class="billing-note">Sandbox test modu açık. Checkout tamamlandıktan sonra erişim Paddle webhook’u ile aktifleşir.</p>
 </div>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script>
 Paddle.Environment.set('{{ paddle_env }}');
