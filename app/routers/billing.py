@@ -22,9 +22,12 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("", response_class=HTMLResponse)
 def billing_page(request: Request, session: Session = Depends(get_session)):
     user = get_current_user(request, session)
+    paddle_env = os.getenv("PADDLE_ENV", "sandbox").strip().lower()
+    if paddle_env == "live":
+        paddle_env = "production"
     return templates.TemplateResponse(request=request, name="billing/index.html", context={
         "user": user,
-        "paddle_env": os.getenv("PADDLE_ENV", "sandbox"),
+        "paddle_env": paddle_env,
         "client_token": os.getenv("PADDLE_CLIENT_TOKEN", ""),
         "monthly_price_id": os.getenv("PADDLE_MONTHLY_PRICE_ID", ""),
         "yearly_price_id": os.getenv("PADDLE_YEARLY_PRICE_ID", ""),
