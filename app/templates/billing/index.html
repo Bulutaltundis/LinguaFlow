@@ -10,7 +10,7 @@
   </div>
 </div>
 {% if user %}
-<!-- <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script> -->
+<!-- <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script>
 Paddle.Environment.set('{{ paddle_env }}');
 Paddle.Initialize({token: '{{ client_token }}'});
 document.querySelectorAll('.checkout-button').forEach(function(button) {
@@ -20,6 +20,6 @@ document.querySelectorAll('.checkout-button').forEach(function(button) {
     Paddle.Checkout.open({items: [{priceId: priceId, quantity: 1}], customer: {email: 'mehmet.altundis@gmail.com'}, customData: {user_id: '{{ user.id }}', plan: button.dataset.plan}});
   });
 });
-</script>
+</script>  -->
 {% endif %}
 {% endblock %}
