@@ -1,25 +1,201 @@
 {% extends "base.html" %}
+
 {% block title %}Super LinguaFlow · LinguaFlow{% endblock %}
+
 {% block content %}
+
 <div class="content billing-page">
-  <div class="billing-hero"><span>⚡ SUPER LINGUAFLOW</span><h1>Öğrenmenin sınırlarını kaldır.</h1><p>Sınırsız heart, daha hızlı ilerleme ve kesintisiz pratik.</p></div>
-  {% if user and user.subscription_plan and user.subscription_status in ['active','trialing'] %}<div class="class-alert reward-success">✓ {{ 'Aylık' if user.subscription_plan == 'monthly' else 'Yıllık' }} Super LinguaFlow planın aktif.</div>{% endif %}
-  <div class="plan-grid">
-    <article class="plan-card"><div class="plan-badge">ESNEK</div><h2>Super LinguaFlow</h2><div class="plan-period">Aylık</div><div class="plan-price">100 TL <span>/ ay</span></div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul>{% if user %}<button class="class-btn green checkout-button" data-price-id="{{ monthly_price_id }}" data-plan="monthly">Aylık başla →</button>{% else %}<a class="class-btn green" href="/auth/login">Giriş yap →</a>{% endif %}</article>
-    <article class="plan-card featured"><div class="plan-badge">EN AVANTAJLI</div><h2>Super LinguaFlow</h2><div class="plan-period">Yıllık</div><div class="plan-price">1.200 TL <span>/ yıl</span></div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul>{% if user %}<button class="class-btn purple checkout-button" data-price-id="{{ yearly_price_id }}" data-plan="yearly">Yıllık başla →</button>{% else %}<a class="class-btn purple" href="/auth/login">Giriş yap →</a>{% endif %}</article>
-  </div>
+
+    <div class="billing-hero">
+        <span>⚡ SUPER LINGUAFLOW</span>
+        <h1>Öğrenmenin sınırlarını kaldır.</h1>
+        <p>Sınırsız heart, daha hızlı ilerleme ve kesintisiz pratik.</p>
+    </div>
+
+    {% if user and user.subscription_plan and user.subscription_status in ['active', 'trialing'] %}
+    <div class="class-alert reward-success">
+        ✓ {{ 'Aylık' if user.subscription_plan == 'monthly' else 'Yıllık' }}
+        Super LinguaFlow planın aktif.
+    </div>
+    {% endif %}
+
+    <div class="plan-grid">
+
+        <!-- AYLIK -->
+        <article class="plan-card">
+
+            <div class="plan-badge">
+                ESNEK
+            </div>
+
+            <h2>Super LinguaFlow</h2>
+
+            <div class="plan-period">
+                Aylık
+            </div>
+
+            <div class="plan-price">
+                100 TL <span>/ ay</span>
+            </div>
+
+            <ul>
+                <li>❤️ Sınırsız heart</li>
+                <li>📚 Tüm derslere erişim</li>
+                <li>⚡ Kesintisiz pratik</li>
+            </ul>
+
+            {% if user %}
+
+            <button
+                type="button"
+                class="class-btn green checkout-button"
+                data-price-id="{{ monthly_price_id }}"
+                data-plan="monthly">
+                Aylık başla →
+            </button>
+
+            {% else %}
+
+            <a
+                class="class-btn green"
+                href="/auth/login">
+                Giriş yap →
+            </a>
+
+            {% endif %}
+
+        </article>
+
+
+        <!-- YILLIK -->
+        <article class="plan-card featured">
+
+            <div class="plan-badge">
+                EN AVANTAJLI
+            </div>
+
+            <h2>Super LinguaFlow</h2>
+
+            <div class="plan-period">
+                Yıllık
+            </div>
+
+            <div class="plan-price">
+                1.200 TL <span>/ yıl</span>
+            </div>
+
+            <ul>
+                <li>❤️ Sınırsız heart</li>
+                <li>📚 Tüm derslere erişim</li>
+                <li>⚡ Kesintisiz pratik</li>
+            </ul>
+
+            {% if user %}
+
+            <button
+                type="button"
+                class="class-btn purple checkout-button"
+                data-price-id="{{ yearly_price_id }}"
+                data-plan="yearly">
+                Yıllık başla →
+            </button>
+
+            {% else %}
+
+            <a
+                class="class-btn purple"
+                href="/auth/login">
+                Giriş yap →
+            </a>
+
+            {% endif %}
+
+        </article>
+
+    </div>
+
 </div>
+
+
 {% if user %}
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script>
-Paddle.Environment.set('{{ paddle_env }}');
-Paddle.Initialize({token: '{{ client_token }}'});
-document.querySelectorAll('.checkout-button').forEach(function(button) {
-  button.addEventListener('click', function() {
-    const priceId = button.dataset.priceId;
-    if (!priceId) { alert('Paddle fiyat ID yapılandırılmamış.'); return; }
-    Paddle.Checkout.open({items: [{priceId: priceId, quantity: 1}], customer: {email: 'yourmail@example.com'}, customData: {user_id: '{{ user.id }}', plan: button.dataset.plan}});
-  });
-});
+
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
+<script>
+
+    // Kullanıcı bilgileri
+    const currentUserEmail = {{ user.email | tojson }};
+    const currentUserId = {{ user.id | tojson }};
+
+
+    // Paddle ortamı
+    Paddle.Environment.set('{{ paddle_env }}');
+
+
+    // Paddle başlat
+    Paddle.Initialize({
+        token: '{{ client_token }}'
+    });
+
+
+    // Checkout butonları
+    document.querySelectorAll('.checkout-button').forEach(function(button) {
+
+        button.addEventListener('click', function() {
+
+            const priceId = button.dataset.priceId;
+            const plan = button.dataset.plan;
+
+
+            // Price ID kontrolü
+            if (!priceId) {
+                alert('Paddle fiyat ID yapılandırılmamış.');
+                return;
+            }
+
+
+            // Email kontrolü
+            if (!currentUserEmail) {
+                alert('Hesabında e-posta adresi bulunamadı.');
+                return;
+            }
+
+
+            console.log('Paddle Checkout:', {
+                email: currentUserEmail,
+                userId: currentUserId,
+                priceId: priceId,
+                plan: plan
+            });
+
+
+            // Paddle Checkout
+            Paddle.Checkout.open({
+
+                items: [
+                    {
+                        priceId: priceId,
+                        quantity: 1
+                    }
+                ],
+
+                customer: {
+                    email: currentUserEmail
+                },
+
+                customData: {
+                    user_id: currentUserId,
+                    plan: plan
+                }
+
+            });
+
+        });
+
+    });
+
 </script>
+
 {% endif %}
+
 {% endblock %}
