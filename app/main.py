@@ -16,6 +16,7 @@ from app.routers import classes
 from app.routers import courses
 from app.routers import rewards
 from app.routers import billing
+from app.routers import public
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -102,3 +103,4 @@ app.include_router(classes.router)
 app.include_router(courses.router)
 app.include_router(rewards.router)
 app.include_router(billing.router)
+app.include_router(public.router)
