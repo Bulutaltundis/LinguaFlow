@@ -6,7 +6,7 @@ import time
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 
@@ -22,8 +22,6 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("", response_class=HTMLResponse)
 def billing_page(request: Request, session: Session = Depends(get_session)):
     user = get_current_user(request, session)
-    if not user:
-        return RedirectResponse("/auth/login", status_code=303)
     return templates.TemplateResponse(request=request, name="billing/index.html", context={
         "user": user,
         "paddle_env": os.getenv("PADDLE_ENV", "sandbox"),
