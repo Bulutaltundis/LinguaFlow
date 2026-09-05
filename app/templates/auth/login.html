@@ -10,6 +10,10 @@
 
     <title>LinguaFlow — Giriş</title>
 
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/app.css') }}"
+    >
     
 <style>
 :root {
@@ -57,6 +61,23 @@ body {
         system-ui,
         sans-serif;
 }
+
+.site-footer {
+    width: min(430px, 100%);
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 14px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.site-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; }
+.site-footer a { color: var(--muted); text-decoration: none; }
+.site-footer a:hover { color: var(--green-dark); }
 
 .card {
     width: 100%;
@@ -415,6 +436,16 @@ button:active {
             Kayıt ol
         </a>
     </div>
+
+    <footer class="site-footer">
+            <span>© 2026 LinguaFlow</span>
+            <nav aria-label="Legal and contact links">
+                <a href="/terms">Terms of Service</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/refund">Refund Policy</a>
+                <a href="/contact">Contact</a>
+            </nav>
+        </footer>
 
 </div>
 
