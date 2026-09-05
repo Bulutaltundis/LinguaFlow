@@ -7,6 +7,7 @@ from app.models.shop import ShopItem, Purchase
 from app.models.classroom import Classroom, ClassMembership, Assignment, ClassShopItem
 from app.models.session import UserSession
 from app.models.attempt import QuestionAttempt
+from app.models.reward import Chest, UserChest, UserTask
 
 
 __all__ = [
@@ -25,4 +26,7 @@ __all__ = [
     "ClassShopItem",
     "UserSession",
     "QuestionAttempt",
+    "Chest",
+    "UserChest",
+    "UserTask",
 ]

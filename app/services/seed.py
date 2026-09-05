@@ -3,9 +3,19 @@ from sqlmodel import Session, select
 from app.models.course import Course
 from app.models.lesson import Unit, Lesson, Question
 from app.models.shop import ShopItem
+from app.models.reward import Chest
 
 
 def seed_database(session: Session):
+    if not session.exec(select(Chest)).first():
+        session.add_all([
+            Chest(name="Ahşap Sandık", rarity="common", icon="📦", min_gems=15, max_gems=35),
+            Chest(name="Gümüş Sandık", rarity="uncommon", icon="🧰", min_gems=30, max_gems=70),
+            Chest(name="Altın Sandık", rarity="rare", icon="🎁", min_gems=60, max_gems=130),
+            Chest(name="Kristal Sandık", rarity="epic", icon="💎", min_gems=120, max_gems=280),
+            Chest(name="Efsane Sandık", rarity="legendary", icon="👑", min_gems=250, max_gems=600),
+        ])
+        session.commit()
 
     default_items = [
         ("Seri Dondurucu", "Bir gün aksasan bile serini korur.", "🧊", 80, "streak_freeze"),

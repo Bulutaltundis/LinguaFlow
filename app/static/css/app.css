@@ -92,6 +92,18 @@
 .selected-badge { color:#3f9700; background:var(--green-soft); }
 .course-hero { background:linear-gradient(135deg,#3f2877,#7145c9 60%,#9a74ed); }
 .theme-ocean { --green:#1cb0f6; --green-dark:#0d8dc9; --green-soft:#eaf8ff; }
+.reward-hero { background:linear-gradient(135deg,#162a55,#3b58bc 60%,#7a66df); }
+.reward-success { color:#287d00; border-color:#bfe7a5; background:#efffe7; }
+.reward-columns { display:grid; grid-template-columns:1.15fr .85fr; gap:18px; margin-top:20px; }
+.task-list { display:flex; flex-direction:column; gap:10px; }
+.task-row { display:flex; align-items:center; gap:12px; padding:13px; border:1px solid #edf0f5; border-radius:15px; background:#fafbfc; }
+.task-row.done { border-color:#d3efc2; background:#f7fff3; }
+.task-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; color:#5971b5; background:#eaf0ff; font-size:19px; }
+.task-row.done .task-icon { color:#fff; background:var(--green); }
+.task-copy { flex:1; min-width:0; }.task-copy strong,.task-copy small { display:block; }.task-copy strong { font-size:13px; }.task-copy small { margin-top:3px; color:var(--muted); font-size:11px; }
+.task-progress { height:7px; margin-top:9px; overflow:hidden; border-radius:99px; background:#e7ebf1; }.task-progress span { display:block; height:100%; border-radius:inherit; background:var(--green); }.task-copy em { display:block; margin-top:4px; color:var(--muted); font-size:10px; font-style:normal; font-weight:850; }
+.task-reward { color:#bd8200; font-size:12px; font-weight:900; text-align:center; line-height:1.6; }.claimed { color:#51a52b; font-size:11px; font-weight:900; white-space:nowrap; }
+.chest-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }.chest-card { padding:17px 12px; border:1px solid #e9edf4; border-radius:16px; text-align:center; background:#fbfcff; }.chest-icon { font-size:41px; filter:drop-shadow(0 7px 6px rgba(31,50,90,.13)); }.chest-card strong,.chest-card small,.chest-card > span { display:block; }.chest-card strong { margin-top:6px; font-size:13px; }.chest-card small { margin-top:3px; color:var(--muted); font-size:11px; }.chest-card > span { margin:9px 0 12px; color:#c28b15; font-size:10px; font-weight:900; }.chest-card .class-btn { width:100%; min-height:37px; padding:0 8px; font-size:11px; }.rarity-common { border-color:#dce3eb; }.rarity-uncommon { border-color:#9bd8b2; background:#f5fff8; }.rarity-rare { border-color:#9dc4ff; background:#f3f8ff; }.rarity-epic { border-color:#d2b4ff; background:#fbf6ff; }.rarity-legendary { border-color:#ffd777; background:#fffaf0; }
 .theme-ocean .profile-card { background:linear-gradient(135deg,#0f5fa5,#1cb0f6); color:#fff; }
 .profile-edit-link { float:right; padding:10px 13px; border:1px solid var(--border); border-radius:11px; color:var(--green-dark); background:#fff; font-size:12px; font-weight:850; }
 .profile-cosmetic { display:inline-block; margin-top:8px; padding:5px 9px; border-radius:8px; color:#9a6500; background:#fff4c7; font-size:11px; font-weight:900; }
@@ -159,6 +171,7 @@
 @media (max-width:900px) { .class-page { padding-top:24px; } .class-grid, .course-select-grid { grid-template-columns:repeat(2,1fr); } .detail-columns { grid-template-columns:1fr; } .detail-columns aside { display:grid; grid-template-columns:1fr 1fr; gap:18px; } }
 @media (max-width:650px) { .class-action-grid, .class-grid, .course-select-grid, .detail-columns aside { grid-template-columns:1fr; } .class-hero, .class-detail-hero { padding:27px 22px; } .class-hero h1, .class-detail-hero h1 { font-size:29px; } .hero-orb { display:none; } .code-card { min-width:140px; padding:11px; } .class-detail-hero { align-items:flex-start; gap:16px; flex-direction:column; } .class-stats { grid-template-columns:1fr 1fr; } .inline-form { flex-direction:column; } .detail-actions .class-btn { flex:1; } .member > span { display:none; } }
 @media (max-width:650px) { .settings-hero, .settings-section { grid-template-columns:1fr; display:flex; flex-direction:column; align-items:flex-start; } .settings-preview { width:100%; min-width:0; } .save-profile { align-self:stretch; } }
+@media (max-width:800px) { .reward-columns { grid-template-columns:1fr; } }
 
 
 /* ============================================================

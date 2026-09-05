@@ -15,6 +15,7 @@ from app.models.xp_event import XPEvent
 from app.core.activity import register_activity
 from app.core.auth import get_current_user as auth_current_user
 from app.models.attempt import QuestionAttempt
+from app.services.rewards import update_task
 
 
 templates = Jinja2Templates(directory="app/templates")
@@ -260,6 +261,8 @@ def answer_question(
                 source="lesson",
             )
         )       
+        update_task(user.id, "questions", 1, session)
+        update_task(user.id, "xp", xp_earned, session)
     else:
         user.hearts = max(0, user.hearts - 1)
 
@@ -271,6 +274,7 @@ def answer_question(
     finished = next_index >= len(questions)
 
     if finished:
+        update_task(user.id, "lesson", 1, session)
         progress = session.exec(
             select(UserProgress)
             .where(
