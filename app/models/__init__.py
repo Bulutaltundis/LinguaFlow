@@ -10,6 +10,7 @@ from app.models.attempt import QuestionAttempt
 from app.models.reward import Chest, UserChest, UserTask
 from app.models.billing import Subscription, PaddleEvent
 from app.models.apple_iap import AppleEntitlement, AppleNotification
+from app.models.api_key import APIKey
 
 
 __all__ = [
@@ -35,4 +36,5 @@ __all__ = [
     "PaddleEvent",
     "AppleEntitlement",
     "AppleNotification",
+    "APIKey",
 ]

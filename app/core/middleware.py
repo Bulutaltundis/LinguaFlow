@@ -6,13 +6,13 @@ from app.core.rate_limit import allowed
 class SecurityMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         path = request.url.path
-        limited = ("login", 5, 300) if path == "/auth/login" else ("register", 8, 3600) if path == "/auth/register" else ("answer", 60, 60) if path.endswith("/answer") else ("shop", 20, 60) if path.startswith("/shop/buy/") else ("join", 10, 300) if path == "/classes/join" else None
+        limited = ("login", 5, 300) if path in {"/auth/login", "/api/auth/login"} else ("register", 8, 3600) if path == "/auth/register" else ("answer", 60, 60) if path.endswith("/answer") else ("shop", 20, 60) if (path.startswith("/shop/buy/") or path.startswith("/api/shop/buy/")) else ("join", 10, 300) if path in {"/classes/join", "/api/classes/join"} else None
         if limited:
             name, limit, window = limited
             address = request.client.host if request.client else "unknown"
             if not allowed(f"{name}:{address}", limit, window):
                 return JSONResponse({"detail": "Çok fazla istek. Lütfen biraz bekle."}, status_code=429)
-        if request.method in {"POST", "PUT", "PATCH", "DELETE"} and not request.url.path.startswith(("/auth/login", "/auth/register", "/billing/webhook", "/billing/apple/notifications")):
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"} and not request.url.path.startswith(("/auth/login", "/auth/register", "/api/", "/billing/webhook", "/billing/apple/notifications")):
             origin = request.headers.get("origin") or request.headers.get("referer")
             if not origin or urlparse(origin).netloc != request.url.netloc:
                 return JSONResponse({"detail": "CSRF doğrulaması başarısız."}, status_code=403)
