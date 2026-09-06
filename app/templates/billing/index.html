@@ -1,25 +1,648 @@
 {% extends "base.html" %}
+
 {% block title %}Super LinguaFlow · LinguaFlow{% endblock %}
+
 {% block content %}
+
 <div class="content billing-page">
-  <div class="billing-hero"><span>⚡ SUPER LINGUAFLOW</span><h1>Öğrenmenin sınırlarını kaldır.</h1><p>Sınırsız heart, daha hızlı ilerleme ve kesintisiz pratik.</p></div>
-  {% if user and user.subscription_plan and user.subscription_status in ['active','trialing'] %}<div class="class-alert reward-success">✓ {{ 'Aylık' if user.subscription_plan == 'monthly' else 'Yıllık' }} Super LinguaFlow planın aktif.</div>{% endif %}
-  <div class="plan-grid">
-    <article class="plan-card"><div class="plan-badge">ESNEK</div><h2>Super LinguaFlow</h2><div class="plan-period">Aylık</div><div class="plan-price">100 TL <span>/ ay</span></div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul>{% if user %}<button class="class-btn green checkout-button" data-price-id="{{ monthly_price_id }}" data-plan="monthly">Aylık başla →</button>{% else %}<a class="class-btn green" href="/auth/login">Giriş yap →</a>{% endif %}</article>
-    <article class="plan-card featured"><div class="plan-badge">EN AVANTAJLI</div><h2>Super LinguaFlow</h2><div class="plan-period">Yıllık</div><div class="plan-price">1.200 TL <span>/ yıl</span></div><ul><li>❤️ Sınırsız heart</li><li>📚 Tüm derslere erişim</li><li>⚡ Kesintisiz pratik</li></ul>{% if user %}<button class="class-btn purple checkout-button" data-price-id="{{ yearly_price_id }}" data-plan="yearly">Yıllık başla →</button>{% else %}<a class="class-btn purple" href="/auth/login">Giriş yap →</a>{% endif %}</article>
-  </div>
+
+    <div class="billing-hero">
+        <span>⚡ SUPER LINGUAFLOW</span>
+
+        <h1>Öğrenmenin sınırlarını kaldır.</h1>
+
+        <p>
+            Sınırsız heart, daha hızlı ilerleme ve kesintisiz pratik.
+        </p>
+    </div>
+
+
+    {% if user and user.subscription_plan and user.subscription_status in ['active', 'trialing'] %}
+
+    <div class="class-alert reward-success">
+        ✓
+        {{ 'Aylık' if user.subscription_plan == 'monthly' else 'Yıllık' }}
+        Super LinguaFlow planın aktif.
+    </div>
+
+    {% endif %}
+
+
+    <div class="plan-grid">
+
+        <!-- MONTHLY -->
+
+        <article class="plan-card">
+
+            <div class="plan-badge">
+                ESNEK
+            </div>
+
+            <h2>
+                Super LinguaFlow
+            </h2>
+
+            <div class="plan-period">
+                Aylık
+            </div>
+
+            <div class="plan-price">
+                100 TL
+                <span>/ ay</span>
+            </div>
+
+            <ul>
+
+                <li>
+                    ❤️ Sınırsız heart
+                </li>
+
+                <li>
+                    📚 Tüm derslere erişim
+                </li>
+
+                <li>
+                    ⚡ Kesintisiz pratik
+                </li>
+
+            </ul>
+
+
+            {% if user %}
+
+            <button
+                type="button"
+                class="class-btn green checkout-button"
+                data-price-id="{{ monthly_price_id }}"
+                data-plan="monthly"
+            >
+                Aylık başla →
+            </button>
+
+            {% else %}
+
+            <a
+                class="class-btn green"
+                href="/auth/login"
+            >
+                Giriş yap →
+            </a>
+
+            {% endif %}
+
+        </article>
+
+
+        <!-- YEARLY -->
+
+        <article class="plan-card featured">
+
+            <div class="plan-badge">
+                EN AVANTAJLI
+            </div>
+
+            <h2>
+                Super LinguaFlow
+            </h2>
+
+            <div class="plan-period">
+                Yıllık
+            </div>
+
+            <div class="plan-price">
+                1.200 TL
+                <span>/ yıl</span>
+            </div>
+
+            <ul>
+
+                <li>
+                    ❤️ Sınırsız heart
+                </li>
+
+                <li>
+                    📚 Tüm derslere erişim
+                </li>
+
+                <li>
+                    ⚡ Kesintisiz pratik
+                </li>
+
+            </ul>
+
+
+            {% if user %}
+
+            <button
+                type="button"
+                class="class-btn purple checkout-button"
+                data-price-id="{{ yearly_price_id }}"
+                data-plan="yearly"
+            >
+                Yıllık başla →
+            </button>
+
+            {% else %}
+
+            <a
+                class="class-btn purple"
+                href="/auth/login"
+            >
+                Giriş yap →
+            </a>
+
+            {% endif %}
+
+        </article>
+
+    </div>
+
 </div>
+
+
 {% if user %}
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script>
-Paddle.Environment.set('{{ paddle_env }}');
-Paddle.Initialize({token: '{{ client_token }}'});
-document.querySelectorAll('.checkout-button').forEach(function(button) {
-  button.addEventListener('click', function() {
-    const priceId = button.dataset.priceId;
-    if (!priceId) { alert('Paddle fiyat ID yapılandırılmamış.'); return; }
-    Paddle.Checkout.open({items: [{priceId: priceId, quantity: 1}], customer: {email: 'your-email@example.com'}, customData: {user_id: '{{ user.id }}', plan: button.dataset.plan}});
-  });
-});
+
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
+<script>
+
+    /*
+     * ============================================================
+     * LINGUAFLOW × PADDLE
+     * ============================================================
+     */
+
+
+    // ------------------------------------------------------------
+    // USER DATA
+    // ------------------------------------------------------------
+
+    const currentUserEmail = {{ user.email | tojson }};
+    const currentUserId = {{ user.id | tojson }};
+
+
+    // ------------------------------------------------------------
+    // PADDLE CONFIG
+    // ------------------------------------------------------------
+
+    const paddleEnvironment = {{ paddle_env | tojson }};
+    const paddleClientToken = {{ client_token | tojson }};
+
+    const monthlyPriceId = {{ monthly_price_id | tojson }};
+    const yearlyPriceId = {{ yearly_price_id | tojson }};
+
+
+    // ------------------------------------------------------------
+    // DEBUG
+    // ------------------------------------------------------------
+
+    console.log("========================================");
+    console.log("LINGUAFLOW PADDLE DEBUG");
+    console.log("========================================");
+
+    console.log("Environment:", paddleEnvironment);
+
+    console.log(
+        "Client token exists:",
+        !!paddleClientToken
+    );
+
+    console.log(
+        "Client token prefix:",
+        paddleClientToken
+            ? paddleClientToken.substring(0, 10) + "..."
+            : "EMPTY"
+    );
+
+    console.log(
+        "Current user email:",
+        currentUserEmail
+    );
+
+    console.log(
+        "Current user ID:",
+        currentUserId
+    );
+
+    console.log(
+        "Monthly Price ID:",
+        monthlyPriceId
+    );
+
+    console.log(
+        "Yearly Price ID:",
+        yearlyPriceId
+    );
+
+    console.log("========================================");
+
+
+    // ------------------------------------------------------------
+    // BASIC VALIDATION
+    // ------------------------------------------------------------
+
+    if (!paddleClientToken) {
+
+        console.error(
+            "❌ PADDLE CLIENT TOKEN BOŞ!"
+        );
+
+    }
+
+    if (!currentUserEmail) {
+
+        console.error(
+            "❌ USER EMAIL BOŞ!"
+        );
+
+    }
+
+    if (!currentUserId) {
+
+        console.error(
+            "❌ USER ID BOŞ!"
+        );
+
+    }
+
+
+    // ------------------------------------------------------------
+    // PADDLE ENVIRONMENT
+    // ------------------------------------------------------------
+
+    if (paddleEnvironment === "sandbox") {
+
+        Paddle.Environment.set("sandbox");
+
+        console.log(
+            "🧪 Paddle Sandbox environment"
+        );
+
+    } else {
+
+        console.log(
+            "🟢 Paddle Live environment"
+        );
+
+    }
+
+
+    // ------------------------------------------------------------
+    // INITIALIZE PADDLE
+    // ------------------------------------------------------------
+
+    try {
+
+        Paddle.Initialize({
+
+            token: paddleClientToken,
+
+            eventCallback: function (event) {
+
+                console.log(
+                    "📡 Paddle Event:",
+                    event
+                );
+
+            }
+
+        });
+
+
+        console.log(
+            "✅ Paddle.Initialize başarılı"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Paddle.Initialize ERROR:"
+        );
+
+        console.error(error);
+
+        console.error(
+            "JSON:",
+            JSON.stringify(
+                error,
+                null,
+                2
+            )
+        );
+
+    }
+
+
+    // ------------------------------------------------------------
+    // CHECKOUT BUTTONS
+    // ------------------------------------------------------------
+
+    const checkoutButtons =
+        document.querySelectorAll(
+            ".checkout-button"
+        );
+
+
+    console.log(
+        "Checkout buttons:",
+        checkoutButtons.length
+    );
+
+
+    checkoutButtons.forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    // ------------------------------------------------
+                    // BUTTON DATA
+                    // ------------------------------------------------
+
+                    const priceId =
+                        button.dataset.priceId;
+
+                    const plan =
+                        button.dataset.plan;
+
+
+                    // ------------------------------------------------
+                    // DEBUG
+                    // ------------------------------------------------
+
+                    console.log("");
+                    console.log(
+                        "========================================"
+                    );
+
+                    console.log(
+                        "🛒 PADDLE CHECKOUT"
+                    );
+
+                    console.log(
+                        "========================================"
+                    );
+
+                    console.log(
+                        "Email:",
+                        currentUserEmail
+                    );
+
+                    console.log(
+                        "User ID:",
+                        currentUserId
+                    );
+
+                    console.log(
+                        "Price ID:",
+                        priceId
+                    );
+
+                    console.log(
+                        "Plan:",
+                        plan
+                    );
+
+                    console.log(
+                        "Environment:",
+                        paddleEnvironment
+                    );
+
+
+                    // ------------------------------------------------
+                    // VALIDATION
+                    // ------------------------------------------------
+
+                    if (!priceId) {
+
+                        console.error(
+                            "❌ Price ID boş!"
+                        );
+
+                        alert(
+                            "Paddle fiyat ID yapılandırılmamış."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (!currentUserEmail) {
+
+                        console.error(
+                            "❌ Kullanıcı email'i boş!"
+                        );
+
+                        alert(
+                            "Hesabında e-posta adresi bulunamadı."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (!currentUserId) {
+
+                        console.error(
+                            "❌ Kullanıcı ID boş!"
+                        );
+
+                        alert(
+                            "Kullanıcı hesabı bulunamadı."
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ------------------------------------------------
+                    // CHECK PRICE ID FORMAT
+                    // ------------------------------------------------
+
+                    if (
+                        !priceId.startsWith("pri_")
+                    ) {
+
+                        console.error(
+                            "❌ Geçersiz Paddle Price ID:",
+                            priceId
+                        );
+
+                        alert(
+                            "Paddle Price ID geçersiz."
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ------------------------------------------------
+                    // CHECK EMAIL
+                    // ------------------------------------------------
+
+                    if (
+                        typeof currentUserEmail !== "string"
+                    ) {
+
+                        console.error(
+                            "❌ Email string değil:",
+                            typeof currentUserEmail
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ------------------------------------------------
+                    // OPEN CHECKOUT
+                    // ------------------------------------------------
+
+                    try {
+
+                        console.log(
+                            "🚀 Paddle.Checkout.open() çağrılıyor..."
+                        );
+
+
+                        Paddle.Checkout.open({
+
+                            // ------------------------------
+                            // PRODUCT
+                            // ------------------------------
+
+                            items: [
+
+                                {
+                                    priceId: priceId,
+                                    quantity: 1
+                                }
+
+                            ],
+
+
+                            // ------------------------------
+                            // CUSTOMER
+                            // ------------------------------
+
+                            customer: {
+
+                                email:
+                                    currentUserEmail
+
+                            },
+
+
+                            // ------------------------------
+                            // CUSTOM DATA
+                            // ------------------------------
+
+                            customData: {
+
+                                user_id:
+                                    String(
+                                        currentUserId
+                                    ),
+
+                                plan:
+                                    String(
+                                        plan
+                                    )
+
+                            }
+
+                        });
+
+
+                        console.log(
+                            "✅ Paddle.Checkout.open() gönderildi"
+                        );
+
+
+                    } catch (error) {
+
+                        console.error("");
+                        console.error(
+                            "========================================"
+                        );
+
+                        console.error(
+                            "❌ PADDLE CHECKOUT ERROR"
+                        );
+
+                        console.error(
+                            "========================================"
+                        );
+
+                        console.error(
+                            "Raw error:",
+                            error
+                        );
+
+
+                        console.error(
+                            "Error message:",
+                            error?.message
+                        );
+
+
+                        console.error(
+                            "Error name:",
+                            error?.name
+                        );
+
+
+                        console.error(
+                            "Error code:",
+                            error?.code
+                        );
+
+
+                        try {
+
+                            console.error(
+                                "Error JSON:",
+                                JSON.stringify(
+                                    error,
+                                    null,
+                                    2
+                                )
+                            );
+
+                        } catch (jsonError) {
+
+                            console.error(
+                                "Error JSON oluşturulamadı:",
+                                jsonError
+                            );
+
+                        }
+
+                        console.error(
+                            "========================================"
+                        );
+
+
+                        alert(
+                            "Paddle Checkout açılırken bir hata oluştu. " +
+                            "Tarayıcı konsolunu kontrol et."
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
 </script>
+
 {% endif %}
+
 {% endblock %}

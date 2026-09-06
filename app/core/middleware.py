@@ -12,7 +12,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             address = request.client.host if request.client else "unknown"
             if not allowed(f"{name}:{address}", limit, window):
                 return JSONResponse({"detail": "Çok fazla istek. Lütfen biraz bekle."}, status_code=429)
-        if request.method in {"POST", "PUT", "PATCH", "DELETE"} and not request.url.path.startswith(("/auth/login", "/auth/register", "/billing/webhook")):
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"} and not request.url.path.startswith(("/auth/login", "/auth/register", "/billing/webhook", "/billing/apple/notifications")):
             origin = request.headers.get("origin") or request.headers.get("referer")
             if not origin or urlparse(origin).netloc != request.url.netloc:
                 return JSONResponse({"detail": "CSRF doğrulaması başarısız."}, status_code=403)

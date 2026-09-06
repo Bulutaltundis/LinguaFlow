@@ -14,6 +14,8 @@ from app.core.auth import get_current_user
 from app.core.database import get_session
 from app.models.billing import PaddleEvent, Subscription
 from app.models.user import User
+from app.models.apple_iap import AppleNotification, AppleEntitlement
+from app.services.apple_iap import apple_verifier, apply_transaction
 
 router = APIRouter(prefix="/billing", tags=["Billing"])
 templates = Jinja2Templates(directory="app/templates")
@@ -32,6 +34,62 @@ def billing_page(request: Request, session: Session = Depends(get_session)):
         "monthly_price_id": os.getenv("PADDLE_MONTHLY_PRICE_ID", ""),
         "yearly_price_id": os.getenv("PADDLE_YEARLY_PRICE_ID", ""),
     })
+
+
+@router.post("/apple/transaction")
+async def apple_transaction(request: Request, session: Session = Depends(get_session)):
+    """iOS, StoreKit'ten aldığı signedTransaction'i bu endpoint'e yollar."""
+    user = get_current_user(request, session)
+    if not user:
+        return JSONResponse({"detail": "Authentication required"}, status_code=401)
+    try:
+        body = await request.json()
+        signed_transaction = body.get("signed_transaction")
+        if not signed_transaction:
+            return JSONResponse({"detail": "signed_transaction gerekli"}, status_code=400)
+        transaction = apple_verifier().verify_and_decode_signed_transaction(signed_transaction)
+        apply_transaction(user, transaction, session)
+        session.commit()
+        return {"ok": True, "plan": user.subscription_plan, "status": user.subscription_status}
+    except (ValueError, RuntimeError) as exc:
+        session.rollback()
+        return JSONResponse({"detail": str(exc)}, status_code=400)
+    except Exception:
+        session.rollback()
+        return JSONResponse({"detail": "Apple transaction doğrulanamadı"}, status_code=400)
+
+
+@router.post("/apple/notifications")
+async def apple_notifications(request: Request, session: Session = Depends(get_session)):
+    """App Store Server Notifications V2 endpoint'i."""
+    try:
+        body = await request.json()
+        signed_payload = body.get("signedPayload")
+        if not signed_payload:
+            return JSONResponse({"detail": "signedPayload gerekli"}, status_code=400)
+        notification = apple_verifier().verify_and_decode_notification(signed_payload)
+        notification_id = getattr(notification, "notification_id", None)
+        notification_type = getattr(notification, "notification_type", "")
+        if notification_id and session.exec(select(AppleNotification).where(AppleNotification.notification_id == notification_id)).first():
+            return {"ok": True}
+        if notification_id:
+            session.add(AppleNotification(notification_id=notification_id, notification_type=notification_type))
+        data = getattr(notification, "data", None)
+        signed_transaction = getattr(data, "signed_transaction_info", None) if data else None
+        if signed_transaction:
+            # Library sürümüne göre bu alan zaten decoded payload veya JWS olabilir.
+            transaction = (apple_verifier().verify_and_decode_signed_transaction(signed_transaction)
+                           if isinstance(signed_transaction, str) else signed_transaction)
+            original_id = getattr(transaction, "original_transaction_id", None)
+            entitlement = session.exec(select(AppleEntitlement).where(AppleEntitlement.original_transaction_id == original_id)).first()
+            if entitlement:
+                user = session.get(User, entitlement.user_id)
+                apply_transaction(user, transaction, session)
+        session.commit()
+        return {"ok": True}
+    except Exception:
+        session.rollback()
+        return JSONResponse({"detail": "Apple notification işlenemedi"}, status_code=400)
 
 
 def verify_signature(raw_body: bytes, signature: str, secret: str) -> bool:

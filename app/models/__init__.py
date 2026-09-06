@@ -9,6 +9,7 @@ from app.models.session import UserSession
 from app.models.attempt import QuestionAttempt
 from app.models.reward import Chest, UserChest, UserTask
 from app.models.billing import Subscription, PaddleEvent
+from app.models.apple_iap import AppleEntitlement, AppleNotification
 
 
 __all__ = [
@@ -32,4 +33,6 @@ __all__ = [
     "UserTask",
     "Subscription",
     "PaddleEvent",
+    "AppleEntitlement",
+    "AppleNotification",
 ]
