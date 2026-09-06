@@ -10,6 +10,7 @@ from app.core.auth import create_session, cookie_kwargs, CSRF_COOKIE, SESSION_CO
 from app.core.billing import has_unlimited_hearts
 from app.core.database import get_session
 from app.core.security import verify_password
+from app.core.security import hash_password
 from app.models.api_key import APIKey
 from app.models.attempt import QuestionAttempt
 from app.models.classroom import Assignment, ClassMembership, Classroom
@@ -79,6 +80,24 @@ async def api_login(request: Request, session: Session = Depends(get_session)):
         raise HTTPException(status_code=401, detail="E-posta veya şifre hatalı")
     key = create_api_key(user, session)
     return {"api_key": key, "token_type": "ApiKey", "user": user_json(user)}
+
+
+@router.post("/auth/register")
+async def api_register(request: Request, session: Session = Depends(get_session)):
+    body = await request.json()
+    username = str(body.get("username", "")).strip()
+    email = str(body.get("email", "")).strip().lower()
+    password = str(body.get("password", ""))
+    if len(username) < 3 or len(username) > 32 or len(password) < 8 or "@" not in email:
+        raise HTTPException(400, "Geçersiz kayıt bilgileri")
+    existing = session.exec(select(User).where((User.username == username) | (User.email == email))).first()
+    if existing:
+        raise HTTPException(400, "Kayıt bilgileri kullanılamıyor")
+    user = User(username=username, email=email, password_hash=hash_password(password), role="student")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return {"api_key": create_api_key(user, session), "token_type": "ApiKey", "user": user_json(user)}
 
 
 @router.post("/auth/key/rotate")

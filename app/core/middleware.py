@@ -6,7 +6,7 @@ from app.core.rate_limit import allowed
 class SecurityMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         path = request.url.path
-        limited = ("login", 5, 300) if path in {"/auth/login", "/api/auth/login"} else ("register", 8, 3600) if path == "/auth/register" else ("answer", 60, 60) if path.endswith("/answer") else ("shop", 20, 60) if (path.startswith("/shop/buy/") or path.startswith("/api/shop/buy/")) else ("join", 10, 300) if path in {"/classes/join", "/api/classes/join"} else None
+        limited = ("login", 5, 300) if path in {"/auth/login", "/api/auth/login"} else ("register", 8, 3600) if path in {"/auth/register", "/api/auth/register"} else ("answer", 60, 60) if path.endswith("/answer") else ("shop", 20, 60) if (path.startswith("/shop/buy/") or path.startswith("/api/shop/buy/")) else ("join", 10, 300) if path in {"/classes/join", "/api/classes/join"} else None
         if limited:
             name, limit, window = limited
             address = request.client.host if request.client else "unknown"
