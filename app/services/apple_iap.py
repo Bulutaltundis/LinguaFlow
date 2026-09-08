@@ -63,6 +63,10 @@ def apply_transaction(user: User, transaction, session: Session):
 
     print("========== APPLE TRANSACTION DEBUG ==========")
     print("TRANSACTION TYPE:", type(transaction))
+    print(
+        "TRANSACTION ATTRS:",
+        [x for x in dir(transaction) if not x.startswith("_")]
+    )
     print("PRODUCT ID:", repr(product_id))
     print("PLAN:", repr(plan))
     print("TRANSACTION ID:", repr(transaction_id))
