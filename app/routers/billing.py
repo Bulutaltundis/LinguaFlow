@@ -3,24 +3,28 @@ import hmac
 import json
 import os
 import time
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 
-from app.core.auth import get_current_user
 from app.core.api_auth import get_api_user
+from app.core.auth import get_current_user
 from app.core.database import get_session
 from app.models.apple_iap import AppleEntitlement, AppleNotification
 from app.models.billing import PaddleEvent, Subscription
 from app.models.user import User
 from app.services.apple_iap import apple_verifier, apply_transaction
 
+
 router = APIRouter(prefix="/billing", tags=["Billing"])
 templates = Jinja2Templates(directory="app/templates")
 
+
+# ============================================================
+# BILLING PAGE
+# ============================================================
 
 @router.get("", response_class=HTMLResponse)
 def billing_page(
@@ -29,7 +33,10 @@ def billing_page(
 ):
     user = get_current_user(request, session)
 
-    paddle_env = os.getenv("PADDLE_ENV", "sandbox").strip().lower()
+    paddle_env = os.getenv(
+        "PADDLE_ENV",
+        "sandbox",
+    ).strip().lower()
 
     if paddle_env == "live":
         paddle_env = "production"
@@ -40,9 +47,18 @@ def billing_page(
         context={
             "user": user,
             "paddle_env": paddle_env,
-            "client_token": os.getenv("PADDLE_CLIENT_TOKEN", ""),
-            "monthly_price_id": os.getenv("PADDLE_MONTHLY_PRICE_ID", ""),
-            "yearly_price_id": os.getenv("PADDLE_YEARLY_PRICE_ID", ""),
+            "client_token": os.getenv(
+                "PADDLE_CLIENT_TOKEN",
+                "",
+            ),
+            "monthly_price_id": os.getenv(
+                "PADDLE_MONTHLY_PRICE_ID",
+                "",
+            ),
+            "yearly_price_id": os.getenv(
+                "PADDLE_YEARLY_PRICE_ID",
+                "",
+            ),
         },
     )
 
@@ -67,11 +83,15 @@ async def apple_transaction(
     try:
         body = await request.json()
 
-        signed_transaction = body.get("signed_transaction")
+        signed_transaction = body.get(
+            "signed_transaction"
+        )
 
         if not signed_transaction:
             return JSONResponse(
-                {"detail": "signed_transaction gerekli"},
+                {
+                    "detail": "signed_transaction gerekli"
+                },
                 status_code=400,
             )
 
@@ -83,7 +103,7 @@ async def apple_transaction(
             )
         )
 
-        # Transaction'ın bu kullanıcıya ait olup olmadığını
+        # Transaction'ın kullanıcıya ait olup olmadığını
         # ve Premium durumunu apply_transaction kontrol eder.
         apply_transaction(
             user,
@@ -103,23 +123,26 @@ async def apple_transaction(
         session.rollback()
 
         return JSONResponse(
-            {"detail": str(exc)},
+            {
+                "detail": str(exc)
+            },
             status_code=400,
         )
 
-        except Exception as exc:
-            session.rollback()
+    except Exception as exc:
+        session.rollback()
 
-            import traceback
-            traceback.print_exc()
+        import traceback
 
-            return JSONResponse(
-                {
-                    "detail": "Apple transaction doğrulanamadı",
-                    "error": str(exc),
-                },
-                status_code=400,
-            )
+        traceback.print_exc()
+
+        return JSONResponse(
+            {
+                "detail": "Apple transaction doğrulanamadı",
+                "error": str(exc),
+            },
+            status_code=400,
+        )
 
 
 # ============================================================
@@ -141,11 +164,15 @@ async def apple_notifications(
     try:
         body = await request.json()
 
-        signed_payload = body.get("signedPayload")
+        signed_payload = body.get(
+            "signedPayload"
+        )
 
         if not signed_payload:
             return JSONResponse(
-                {"detail": "signedPayload gerekli"},
+                {
+                    "detail": "signedPayload gerekli"
+                },
                 status_code=400,
             )
 
@@ -179,7 +206,9 @@ async def apple_notifications(
             ).first()
 
             if existing_notification:
-                return {"ok": True}
+                return {
+                    "ok": True
+                }
 
             session.add(
                 AppleNotification(
@@ -206,7 +235,10 @@ async def apple_notifications(
 
         if signed_transaction:
 
-            if isinstance(signed_transaction, str):
+            if isinstance(
+                signed_transaction,
+                str,
+            ):
                 transaction = (
                     apple_verifier()
                     .verify_and_decode_signed_transaction(
@@ -247,13 +279,22 @@ async def apple_notifications(
 
         session.commit()
 
-        return {"ok": True}
+        return {
+            "ok": True
+        }
 
-    except Exception:
+    except Exception as exc:
         session.rollback()
 
+        import traceback
+
+        traceback.print_exc()
+
         return JSONResponse(
-            {"detail": "Apple notification işlenemedi"},
+            {
+                "detail": "Apple notification işlenemedi",
+                "error": str(exc),
+            },
             status_code=400,
         )
 
@@ -282,7 +323,9 @@ def verify_signature(
 
     try:
         # Replay attack koruması.
-        if abs(time.time() - int(timestamp)) > 300:
+        if abs(
+            time.time() - int(timestamp)
+        ) > 300:
             return False
 
     except ValueError:
@@ -304,7 +347,9 @@ def verify_signature(
 # PADDLE PLAN
 # ============================================================
 
-def plan_from_data(data: dict) -> str:
+def plan_from_data(
+    data: dict,
+) -> str:
 
     monthly = os.getenv(
         "PADDLE_MONTHLY_PRICE_ID",
@@ -316,9 +361,14 @@ def plan_from_data(data: dict) -> str:
         "",
     )
 
-    for item in data.get("items", []):
+    for item in data.get(
+        "items",
+        [],
+    ):
 
-        price = item.get("price") or {}
+        price = item.get(
+            "price"
+        ) or {}
 
         price_id = (
             price.get("id")
@@ -331,8 +381,7 @@ def plan_from_data(data: dict) -> str:
         if price_id == yearly:
             return "yearly"
 
-    # Tanımsızsa varsayılan olarak monthly/yearly
-    # tahmini yapmak yerine yearly döndürmemek daha güvenli.
+    # Tanımsızsa tahminde bulunma.
     return "unknown"
 
 
@@ -365,12 +414,16 @@ async def paddle_webhook(
         secret,
     ):
         return JSONResponse(
-            {"detail": "Invalid webhook signature"},
+            {
+                "detail": "Invalid webhook signature"
+            },
             status_code=401,
         )
 
     try:
-        payload = json.loads(raw_body)
+        payload = json.loads(
+            raw_body
+        )
 
         event_id = (
             payload.get("event_id")
@@ -382,12 +435,16 @@ async def paddle_webhook(
             "",
         )
 
-        data = payload.get("data") or {}
+        data = payload.get(
+            "data"
+        ) or {}
 
         # Event ID yoksa işleme.
         if not event_id:
             return JSONResponse(
-                {"detail": "Missing event_id"},
+                {
+                    "detail": "Missing event_id"
+                },
                 status_code=400,
             )
 
@@ -395,12 +452,15 @@ async def paddle_webhook(
         # tekrar Premium işlemi yapma.
         existing_event = session.exec(
             select(PaddleEvent).where(
-                PaddleEvent.event_id == event_id
+                PaddleEvent.event_id
+                == event_id
             )
         ).first()
 
         if existing_event:
-            return {"ok": True}
+            return {
+                "ok": True
+            }
 
         session.add(
             PaddleEvent(
@@ -431,7 +491,10 @@ async def paddle_webhook(
                     user_id,
                 )
 
-            except (ValueError, TypeError):
+            except (
+                ValueError,
+                TypeError,
+            ):
                 user = None
 
         # custom_data yoksa subscription ID üzerinden bul.
@@ -501,7 +564,8 @@ async def paddle_webhook(
 
             user.subscription_plan = (
                 plan
-                if active and plan != "unknown"
+                if active
+                and plan != "unknown"
                 else None
             )
 
@@ -540,7 +604,9 @@ async def paddle_webhook(
 
                 if existing_subscription:
 
-                    existing_subscription.status = status
+                    existing_subscription.status = (
+                        status
+                    )
 
                     if plan != "unknown":
                         existing_subscription.plan = (
@@ -574,7 +640,9 @@ async def paddle_webhook(
 
         session.commit()
 
-        return {"ok": True}
+        return {
+            "ok": True
+        }
 
     except (
         ValueError,
@@ -586,6 +654,8 @@ async def paddle_webhook(
         session.rollback()
 
         return JSONResponse(
-            {"detail": "Invalid webhook payload"},
+            {
+                "detail": "Invalid webhook payload"
+            },
             status_code=400,
         )
