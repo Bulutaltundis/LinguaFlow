@@ -27,16 +27,22 @@ class Lesson(SQLModel, table=True):
 class Question(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
-    lesson_id: int = Field(foreign_key="lesson.id")
+    # Soru havuzu
+    level: str = Field(index=True)
 
-    type: str
+    # Eski lesson sistemiyle uyumluluk
+    lesson_id: int | None = Field(
+        default=None,
+        foreign_key="lesson.id",
+        index=True,
+    )
+
+    type: str = "multiple_choice"
 
     prompt: str
-
     answer: str
 
     options: str = ""
-
     explanation: str = ""
 
     # Listening / future media

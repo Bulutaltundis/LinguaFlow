@@ -11,6 +11,7 @@ from app.models.reward import Chest, UserChest, UserTask
 from app.models.billing import Subscription, PaddleEvent
 from app.models.apple_iap import AppleEntitlement, AppleNotification
 from app.models.api_key import APIKey
+from app.models.question_progress import UserQuestionProgress
 
 
 __all__ = [

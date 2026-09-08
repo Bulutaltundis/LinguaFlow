@@ -18,6 +18,7 @@ from app.routers import rewards
 from app.routers import billing
 from app.routers import api
 from app.routers import public
+from app.routers import learning
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -103,3 +104,4 @@ app.include_router(rewards.router)
 app.include_router(billing.router)
 app.include_router(api.router)
 app.include_router(public.router)
+app.include_router(learning.router)
