@@ -60,6 +60,25 @@ def apply_transaction(user: User, transaction, session: Session):
     product_id = _field(transaction, "product_id")
     plan = plan_for_product(product_id)
     transaction_id = _field(transaction, "transaction_id")
+
+    print("========== APPLE TRANSACTION DEBUG ==========")
+    print("TRANSACTION TYPE:", type(transaction))
+    print("PRODUCT ID:", repr(product_id))
+    print("PLAN:", repr(plan))
+    print("TRANSACTION ID:", repr(transaction_id))
+    print(
+        "ORIGINAL TRANSACTION ID:",
+        repr(_field(transaction, "original_transaction_id"))
+    )
+    print(
+        "ENVIRONMENT:",
+        repr(_field(transaction, "environment"))
+    )
+    print(
+        "BUNDLE ID:",
+        repr(_field(transaction, "bundle_id"))
+    )
+    print("==============================================")
     original_id = _field(transaction, "original_transaction_id") or transaction_id
     if not plan or not transaction_id:
         raise ValueError("Geçersiz veya tanımsız Apple product/transaction")
