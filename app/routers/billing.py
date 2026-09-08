@@ -107,13 +107,19 @@ async def apple_transaction(
             status_code=400,
         )
 
-    except Exception:
-        session.rollback()
+    except Exception as exc:
+    session.rollback()
 
-        return JSONResponse(
-            {"detail": "Apple transaction doğrulanamadı"},
-            status_code=400,
-        )
+    import traceback
+    traceback.print_exc()
+
+    return JSONResponse(
+        {
+            "detail": "Apple transaction doğrulanamadı",
+            "error": str(exc),
+        },
+        status_code=400,
+    )
 
 
 # ============================================================
